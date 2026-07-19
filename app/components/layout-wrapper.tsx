@@ -6,6 +6,7 @@ import Navbar from '@/app/components/navbar';
 // Importing the responsive bottom navigation bar
 import BottomNavBar from '@/app/components/bottom-navbar';
 import AddEntryDrawer from '@/app/components/add-entry-drawer';
+import ViewEntryDrawer from '@/app/components/view-entry-drawer';
 import './layout-wrapper.css';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       </main>
       <BottomNavBar />
       <AddEntryDrawer />
+      <ViewEntryDrawer />
     </div>
   );
 }

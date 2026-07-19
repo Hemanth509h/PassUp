@@ -44,7 +44,8 @@ export default function DashboardPage() {
                     passwordLength: entry.password?.length || 8,
                     password: entry.password,
                     notes: entry.notes,
-                    url: entry.url
+                    url: entry.url,
+                    tags: entry.tags
                 }));
                 setVaultItems(items);
             }
@@ -189,6 +190,7 @@ export default function DashboardPage() {
                         {vaultItems.map((item) => (
                             <VaultCard
                                 key={item.id}
+                                id={item.id}
                                 logoUrl={item.logoUrl}
                                 title={item.title}
                                 username={item.username}
@@ -197,6 +199,9 @@ export default function DashboardPage() {
                                 strength={item.strength}
                                 passwordLength={item.passwordLength}
                                 password={item.password}
+                                url={item.url}
+                                notes={item.notes}
+                                tags={item.tags}
                             />
                         ))}
 
