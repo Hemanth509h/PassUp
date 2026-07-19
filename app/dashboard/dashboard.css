@@ -1,0 +1,517 @@
+.dashboard-container {
+    min-height: 100vh;
+    background-color: #f7f9fb;
+    color: #191c1e;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Header styles */
+.dashboard-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: calc(100% - 280px);
+    z-index: 40;
+    background-color: #f7f9fb;
+    border-bottom: 1px solid #c6c6cd;
+    height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 32px;
+    padding-right: 32px;
+    box-sizing: border-box;
+}
+
+.search-wrapper {
+    flex: 1;
+    max-width: 576px;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+    transform: scale(1.01);
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #76777d;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding-left: 48px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #eceef0;
+    border: 1px solid #c6c6cd;
+    border-radius: 12px;
+    outline: none;
+    font-size: 16px;
+    color: #191c1e;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: #76777d;
+}
+
+.search-input:focus {
+    border-color: #0051d5;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    color: #45464d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+    background-color: #e6e8ea;
+}
+
+.badge-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #ba1a1a;
+    border-radius: 50%;
+}
+
+.add-entry-btn {
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 8px 24px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.add-entry-btn:hover {
+    filter: brightness(1.1);
+}
+
+.add-entry-btn:active {
+    transform: scale(0.95);
+}
+
+/* Main Content Layout */
+.dashboard-main {
+    padding: 32px;
+    padding-top: 96px;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    box-sizing: border-box;
+}
+
+/* Stats Section */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(198, 198, 205, 0.3);
+    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 5px 10px -5px rgba(15, 23, 42, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-logins {
+    background-color: rgba(0, 81, 213, 0.1);
+    color: #0051d5;
+}
+
+.stat-score {
+    background-color: rgba(12, 148, 136, 0.1);
+    color: #0c9488;
+}
+
+.stat-weak {
+    background-color: rgba(186, 26, 26, 0.1);
+    color: #ba1a1a;
+}
+
+.stat-sync {
+    background-color: rgba(180, 197, 255, 0.3);
+    color: #00174b;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    color: #45464d;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.stat-value {
+    color: #191c1e;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Vault Section */
+.vault-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.vault-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.vault-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #191c1e;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.vault-tag {
+    background-color: #eceef0;
+    color: #45464d;
+    padding: 4px 16px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.vault-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    color: #45464d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.control-btn:hover {
+    background-color: #e6e8ea;
+}
+
+/* Vault Grid and Cards */
+.vault-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .vault-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .vault-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.vault-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #c6c6cd;
+    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 5px 10px -5px rgba(15, 23, 42, 0.06);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.vault-card:hover {
+    border-color: #0051d5;
+}
+
+.vault-card:active {
+    transform: scale(0.98);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.card-logo {
+    width: 48px;
+    height: 48px;
+    background-color: #eceef0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.card-logo img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.card-top-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-badge {
+    padding: 4px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.badge-strong {
+    background-color: rgba(12, 148, 136, 0.1);
+    color: #0c9488;
+}
+
+.badge-strong::before {
+    background-color: #0c9488;
+}
+
+.badge-medium {
+    background-color: rgba(0, 81, 213, 0.1);
+    color: #0051d5;
+}
+
+.badge-medium::before {
+    background-color: #0051d5;
+}
+
+.badge-weak {
+    background-color: rgba(186, 26, 26, 0.1);
+    color: #ba1a1a;
+}
+
+.badge-weak::before {
+    background-color: #ba1a1a;
+}
+
+.card-menu-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    border-radius: 8px;
+    color: #45464d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.card-menu-btn:hover {
+    background-color: #e6e8ea;
+}
+
+.card-info {
+    margin-bottom: 24px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+    transition: color 0.15s;
+}
+
+.vault-card:hover .card-title {
+    color: #0051d5;
+}
+
+.card-subtitle {
+    font-size: 14px;
+    color: #45464d;
+    margin: 4px 0 0 0;
+}
+
+.card-password-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #f2f4f6;
+    border-radius: 8px;
+    border: 1px solid rgba(198, 198, 205, 0.3);
+}
+
+.password-dots {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #191c1e;
+    letter-spacing: 0.2em;
+}
+
+.password-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.password-action-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: #191c1e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.password-action-btn:hover {
+    color: #0051d5;
+}
+
+/* Add New Entry Button Card */
+.add-card-dashed {
+    background-color: transparent;
+    border: 2px dashed #c6c6cd;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    cursor: pointer;
+    min-height: 220px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.add-card-dashed:hover {
+    background-color: #f2f4f6;
+    border-color: #0051d5;
+}
+
+.add-card-dashed:active {
+    transform: scale(0.98);
+}
+
+.add-card-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #eceef0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #191c1e;
+    transition: all 0.2s;
+}
+
+.add-card-dashed:hover .add-card-icon {
+    background-color: #0051d5;
+    color: #ffffff;
+}
+
+.add-card-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #45464d;
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.add-card-dashed:hover .add-card-text {
+    color: #0051d5;
+}

@@ -1,0 +1,388 @@
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(25, 28, 30, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Mobile default: bottom align */
+}
+
+.drawer-container {
+    width: 100%;
+    max-height: 92vh;
+    background-color: #f7f9fb;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-sizing: border-box;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Drag handle indicator on mobile top center */
+.drawer-drag-handle {
+    width: 40px;
+    height: 4px;
+    background-color: #c6c6cd;
+    border-radius: 2px;
+    margin: 12px auto 8px auto;
+    cursor: pointer;
+}
+
+/* On Desktop: display as a centered modal card */
+@media (min-width: 768px) {
+    .drawer-overlay {
+        align-items: center; /* Center align */
+    }
+
+    .drawer-container {
+        width: 520px;
+        border-radius: 24px;
+        max-height: 85vh;
+        animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .drawer-drag-handle {
+        display: none;
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Inside container content */
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 24px 8px 24px;
+}
+
+.drawer-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+}
+
+.drawer-subtitle {
+    font-size: 14px;
+    color: #45464d;
+    margin: 4px 0 0 0;
+}
+
+.drawer-close-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    color: #45464d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.drawer-close-btn:hover {
+    background-color: #eceef0;
+}
+
+.drawer-form-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.drawer-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.drawer-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.drawer-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #45464d;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.drawer-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #c6c6cd;
+    background-color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.drawer-input:focus {
+    border-color: #0051d5;
+    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+}
+
+.drawer-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.drawer-input-wrapper .drawer-input {
+    padding-right: 44px;
+}
+
+.drawer-input-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(118, 119, 125, 0.5);
+    pointer-events: none;
+}
+
+.drawer-password-row {
+    display: flex;
+    gap: 12px;
+}
+
+.drawer-password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #45464d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawer-refresh-btn {
+    padding: 0 16px;
+    background-color: #eceef0;
+    border: 1px solid #c6c6cd;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    transition: all 0.2s;
+}
+
+.drawer-refresh-btn:hover {
+    background-color: #e0e3e5;
+}
+
+.drawer-refresh-btn:active {
+    transform: scale(0.95);
+}
+
+.drawer-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #c6c6cd;
+    background-color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    resize: none;
+    transition: all 0.2s;
+}
+
+.drawer-textarea:focus {
+    border-color: #0051d5;
+}
+
+/* Strength Meter */
+.drawer-strength-wrapper {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.drawer-strength-track {
+    height: 6px;
+    width: 100%;
+    background-color: #eceef0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.drawer-strength-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #ba1a1a;
+    border-radius: 9999px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+}
+
+.drawer-strength-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #45464d;
+}
+
+/* Tags List */
+.drawer-tags-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.drawer-tag-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    color: #45464d;
+    border: 1px solid #c6c6cd;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.drawer-tag-chip:hover {
+    background-color: #eceef0;
+}
+
+.drawer-tag-chip.selected {
+    background-color: #316bf3;
+    color: #fefcff;
+    border-color: #316bf3;
+}
+
+/* Badge card */
+.drawer-badge-card {
+    padding: 16px;
+    background-color: rgba(49, 107, 243, 0.05);
+    border: 1px solid rgba(49, 107, 243, 0.1);
+    border-radius: 16px;
+    display: flex;
+    gap: 16px;
+}
+
+.drawer-badge-icon-wrapper {
+    padding: 8px;
+    background-color: rgba(49, 107, 243, 0.1);
+    border-radius: 12px;
+    color: #316bf3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawer-badge-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #316bf3;
+    margin: 0;
+}
+
+.drawer-badge-desc {
+    font-size: 12px;
+    color: #45464d;
+    margin: 2px 0 0 0;
+}
+
+/* Bottom Actions Panel */
+.drawer-actions-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid #c6c6cd;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.drawer-submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.drawer-submit-btn:active {
+    transform: scale(0.98);
+}
+
+.drawer-cancel-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    color: #45464d;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.drawer-cancel-btn:hover {
+    background-color: #eceef0;
+}
+
+.mono-font {
+    font-family: 'JetBrains Mono', monospace;
+}

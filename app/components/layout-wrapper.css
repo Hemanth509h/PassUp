@@ -1,0 +1,75 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #020617;
+    box-sizing: border-box;
+}
+
+.app-layout-root {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-main-content {
+    margin-left: 260px;
+    flex: 1;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+    .app-layout-root {
+        flex-direction: column;
+    }
+    
+    .sidebar-wrapper {
+        display: none !important;
+    }
+    
+    .app-main-content {
+        margin-left: 0 !important;
+        padding-bottom: 96px; /* Space for BottomNavBar */
+    }
+    
+    .bottom-nav {
+        display: flex !important;
+    }
+    
+    /* Mobile FAB style */
+    .mobile-fab {
+        position: fixed;
+        right: 24px;
+        bottom: 96px; /* Sits above the 80px bottom navbar */
+        width: 56px;
+        height: 56px;
+        background-color: #316bf3;
+        color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(49, 107, 243, 0.4);
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        z-index: 60;
+        transition: transform 0.2s;
+    }
+
+    .mobile-fab:active {
+        transform: scale(0.9);
+    }
+    
+    /* Responsive header layout overrides on pages */
+    .dashboard-header, .settings-header, .add-entry-header, .security-header {
+        width: 100% !important;
+        left: 0 !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+
+/* Hide FAB on desktop */
+.mobile-fab {
+    display: none;
+}
