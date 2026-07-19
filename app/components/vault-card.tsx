@@ -5,7 +5,9 @@ import React, { useState } from 'react';
 interface VaultCardProps {
     logoUrl: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
+    username?: string;
+    email?: string;
     strength: 'Strong' | 'Medium' | 'Weak';
     passwordLength?: number;
     password?: string;
@@ -14,7 +16,9 @@ interface VaultCardProps {
 export default function VaultCard({ 
     logoUrl, 
     title, 
-    subtitle, 
+    subtitle = '',
+    username = '',
+    email = '',
     strength, 
     passwordLength = 8,
     password = ''
@@ -59,7 +63,21 @@ export default function VaultCard({
             </div>
             <div className="card-info">
                 <h3 className="card-title">{title}</h3>
-                <p className="card-subtitle">{subtitle}</p>
+                {username && (
+                    <p className="card-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', opacity: 0.7 }}>person</span>
+                        {username}
+                    </p>
+                )}
+                {email && (
+                    <p className="card-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: username ? '2px' : '0px' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', opacity: 0.7 }}>alternate_email</span>
+                        {email}
+                    </p>
+                )}
+                {!username && !email && subtitle && (
+                    <p className="card-subtitle">{subtitle}</p>
+                )}
             </div>
             <div className="card-password-container">
                 <code className="password-dots" style={{ letterSpacing: showPassword ? '0px' : '3px' }}>

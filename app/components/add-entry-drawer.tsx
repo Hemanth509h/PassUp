@@ -11,6 +11,7 @@ export default function AddEntryDrawer() {
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [notes, setNotes] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>(['Work']);
@@ -102,6 +103,7 @@ export default function AddEntryDrawer() {
         setTitle('');
         setUrl('');
         setUsername('');
+        setEmail('');
         setPassword('');
         setNotes('');
         setSelectedTags(['Work']);
@@ -115,6 +117,12 @@ export default function AddEntryDrawer() {
         e.preventDefault();
         setSubmitting(true);
         setError(null);
+
+        if (!username && !email) {
+            setError('Please enter either a Username or Email address.');
+            setSubmitting(false);
+            return;
+        }
         
         try {
             const strengthLabel = strength.label === 'None' ? 'Medium' : strength.label.includes('Superior') ? 'Strong' : strength.label.includes('Very Strong') ? 'Strong' : strength.label;
@@ -123,6 +131,7 @@ export default function AddEntryDrawer() {
                 title,
                 url,
                 username,
+                email,
                 password,
                 notes,
                 tags: selectedTags,
@@ -196,19 +205,33 @@ export default function AddEntryDrawer() {
                             </div>
                         </div>
 
-                        {/* Username / Email */}
+                        {/* Username */}
+                        <div className="drawer-form-group">
+                            <label className="drawer-label">
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person</span>
+                                Username
+                            </label>
+                            <input 
+                                className="drawer-input" 
+                                placeholder="john_doe" 
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Email */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>alternate_email</span>
-                                Username / Email
+                                Email
                             </label>
                             <input 
                                 className="drawer-input" 
                                 placeholder="john.doe@example.com" 
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 

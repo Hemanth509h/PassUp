@@ -36,6 +36,8 @@ export default function DashboardPage() {
                 const items = res.entries.map((entry: any) => ({
                     id: entry._id,
                     title: entry.title,
+                    username: entry.username,
+                    email: entry.email,
                     subtitle: entry.username,
                     strength: (entry.strength || 'Medium') as 'Strong' | 'Medium' | 'Weak',
                     logoUrl: getLogoUrl(entry.url, entry.title),
@@ -189,6 +191,8 @@ export default function DashboardPage() {
                                 key={item.id}
                                 logoUrl={item.logoUrl}
                                 title={item.title}
+                                username={item.username}
+                                email={item.email}
                                 subtitle={item.subtitle}
                                 strength={item.strength}
                                 passwordLength={item.passwordLength}

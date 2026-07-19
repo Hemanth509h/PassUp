@@ -11,6 +11,7 @@ export default function AddEntryPage() {
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [notes, setNotes] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>(['Work']);
@@ -89,6 +90,10 @@ export default function AddEntryPage() {
     // Form submit
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!username && !email) {
+            alert('Please enter either a Username or Email address.');
+            return;
+        }
         // Redirect back to dashboard on successful save simulation
         router.push('/dashboard');
     };
@@ -198,20 +203,36 @@ export default function AddEntryPage() {
                                     </div>
                                 </div>
 
-                                {/* Credentials */}
+                                {/* Username */}
+                                <div className="form-group-item">
+                                    <label className="form-group-label">
+                                        <span className="material-symbols-outlined label-icon">person</span>
+                                        Username
+                                    </label>
+                                    <div className="input-relative-wrapper">
+                                        <input 
+                                            className="form-input-field" 
+                                            placeholder="john_doe" 
+                                            type="text" 
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Email */}
                                 <div className="form-group-item">
                                     <label className="form-group-label">
                                         <span className="material-symbols-outlined label-icon">alternate_email</span>
-                                        Username / Email
+                                        Email
                                     </label>
                                     <div className="input-relative-wrapper">
                                         <input 
                                             className="form-input-field" 
                                             placeholder="john.doe@example.com" 
-                                            type="text" 
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            required
+                                            type="email" 
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                 </div>
