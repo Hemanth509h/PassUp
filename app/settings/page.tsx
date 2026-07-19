@@ -7,7 +7,7 @@ import './settings.css';
 
 export default function SettingsPage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     
     // Default to 'profile' tab
     const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'preferences' | 'extensions' | 'shared' | 'audit'>('profile');
@@ -112,6 +112,15 @@ export default function SettingsPage() {
                         >
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'audit' ? "'FILL' 1" : undefined }}>history</span>
                             <span className="font-body-md">Audit Log</span>
+                        </button>
+
+                        <button 
+                            className="settings-tab-btn logout-tab-btn"
+                            onClick={logout}
+                            style={{ color: '#ba1a1a', marginTop: '16px' }}
+                        >
+                            <span className="material-symbols-outlined" style={{ color: '#ba1a1a' }}>logout</span>
+                            <span className="font-body-md" style={{ fontWeight: 600 }}>Log Out</span>
                         </button>
                     </div>
 

@@ -3,10 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTheme } from '../ThemeContext';
 import './bottom-navbar.css';
 
 export default function BottomNavBar() {
     const pathname = usePathname();
+    const { theme, toggleTheme } = useTheme();
 
     const isActive = (path: string) => pathname === path;
 
@@ -48,6 +50,16 @@ export default function BottomNavBar() {
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/settings') ? "'FILL' 1" : undefined }}>settings</span>
                 <span className="bottom-nav-label">Settings</span>
             </Link>
+
+            {/* Theme Tab */}
+            <button 
+                className="bottom-nav-item"
+                onClick={toggleTheme}
+                type="button"
+            >
+                <span className="material-symbols-outlined">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+                <span className="bottom-nav-label">Theme</span>
+            </button>
         </nav>
     );
 }

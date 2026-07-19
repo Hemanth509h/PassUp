@@ -16,7 +16,7 @@
 .drawer-container {
     width: 100%;
     max-height: 92vh;
-    background-color: #f7f9fb;
+    background-color: var(--bg-app);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
@@ -24,6 +24,7 @@
     flex-direction: column;
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -39,7 +40,7 @@
 .drawer-drag-handle {
     width: 40px;
     height: 4px;
-    background-color: #c6c6cd;
+    background-color: var(--border-color);
     border-radius: 2px;
     margin: 12px auto 8px auto;
     cursor: pointer;
@@ -85,13 +86,13 @@
 .drawer-title {
     font-size: 24px;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .drawer-subtitle {
     font-size: 14px;
-    color: #45464d;
+    color: var(--text-secondary);
     margin: 4px 0 0 0;
 }
 
@@ -100,7 +101,7 @@
     border: none;
     padding: 8px;
     border-radius: 50%;
-    color: #45464d;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -109,7 +110,7 @@
 }
 
 .drawer-close-btn:hover {
-    background-color: #eceef0;
+    background-color: var(--bg-button-secondary);
 }
 
 .drawer-form-content {
@@ -137,7 +138,7 @@
 .drawer-label {
     font-size: 14px;
     font-weight: 600;
-    color: #45464d;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -147,9 +148,10 @@
     width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid #c6c6cd;
-    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
     font-size: 16px;
+    color: var(--text-primary);
     outline: none;
     box-sizing: border-box;
     transition: all 0.2s;
@@ -157,6 +159,7 @@
 
 .drawer-input:focus {
     border-color: #0051d5;
+    background-color: var(--bg-input-focus);
     box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
 }
 
@@ -174,7 +177,8 @@
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(118, 119, 125, 0.5);
+    color: var(--text-secondary);
+    opacity: 0.5;
     pointer-events: none;
 }
 
@@ -190,7 +194,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #45464d;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -199,19 +203,19 @@
 
 .drawer-refresh-btn {
     padding: 0 16px;
-    background-color: #eceef0;
-    border: 1px solid #c6c6cd;
+    background-color: var(--bg-button-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #000000;
+    color: var(--text-primary);
     transition: all 0.2s;
 }
 
 .drawer-refresh-btn:hover {
-    background-color: #e0e3e5;
+    background-color: var(--bg-button-secondary-hover);
 }
 
 .drawer-refresh-btn:active {
@@ -222,9 +226,10 @@
     width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid #c6c6cd;
-    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
     font-size: 16px;
+    color: var(--text-primary);
     outline: none;
     box-sizing: border-box;
     resize: none;
@@ -233,6 +238,7 @@
 
 .drawer-textarea:focus {
     border-color: #0051d5;
+    background-color: var(--bg-input-focus);
 }
 
 /* Strength Meter */
@@ -246,7 +252,7 @@
 .drawer-strength-track {
     height: 6px;
     width: 100%;
-    background-color: #eceef0;
+    background-color: var(--bg-button-secondary);
     border-radius: 9999px;
     overflow: hidden;
 }
@@ -263,7 +269,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #45464d;
+    color: var(--text-secondary);
 }
 
 /* Tags List */
@@ -279,9 +285,9 @@
     gap: 4px;
     padding: 6px 14px;
     border-radius: 9999px;
-    background-color: #ffffff;
-    color: #45464d;
-    border: 1px solid #c6c6cd;
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s;
@@ -289,7 +295,7 @@
 }
 
 .drawer-tag-chip:hover {
-    background-color: #eceef0;
+    background-color: var(--bg-button-secondary);
 }
 
 .drawer-tag-chip.selected {
@@ -327,28 +333,27 @@
 
 .drawer-badge-desc {
     font-size: 12px;
-    color: #45464d;
+    color: var(--text-secondary);
     margin: 2px 0 0 0;
 }
 
 /* Bottom Actions Panel */
 .drawer-actions-panel {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid #c6c6cd;
+    background: var(--bg-sidebar);
+    border-top: 1px solid var(--border-color);
     padding: 16px 24px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .drawer-submit-btn {
     width: 100%;
     padding: 14px;
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
     border-radius: 12px;
     font-weight: 700;
     font-size: 14px;
@@ -370,7 +375,7 @@
     width: 100%;
     padding: 12px;
     background-color: transparent;
-    color: #45464d;
+    color: var(--text-secondary);
     border-radius: 12px;
     font-weight: 600;
     font-size: 14px;
@@ -380,7 +385,7 @@
 }
 
 .drawer-cancel-btn:hover {
-    background-color: #eceef0;
+    background-color: var(--bg-button-secondary);
 }
 
 .mono-font {

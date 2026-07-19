@@ -1,9 +1,10 @@
 /* Settings page styles */
 .settings-container {
     min-height: 100vh;
-    background-color: #f7f9fb;
-    color: #191c1e;
-    font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header styles */
@@ -13,8 +14,8 @@
     right: 0;
     width: calc(100% - 260px);
     z-index: 40;
-    background-color: #f7f9fb;
-    border-bottom: 1px solid #c6c6cd;
+    background-color: var(--bg-app);
+    border-bottom: 1px solid var(--border-color);
     height: 64px;
     display: flex;
     justify-content: space-between;
@@ -22,6 +23,7 @@
     padding-left: 32px;
     padding-right: 32px;
     box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .settings-search-wrapper {
@@ -40,7 +42,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #76777d;
+    color: var(--text-secondary);
     pointer-events: none;
 }
 
@@ -49,19 +51,19 @@
     height: 40px;
     padding-left: 40px;
     padding-right: 16px;
-    background-color: #f2f4f6;
-    border: 1px solid #c6c6cd;
+    background-color: var(--bg-search);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     outline: none;
     font-size: 16px;
-    color: #191c1e;
+    color: var(--text-primary);
     box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
 .settings-search-input:focus {
     border-color: #0051d5;
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
 }
 
@@ -76,7 +78,7 @@
     border: none;
     padding: 8px;
     border-radius: 50%;
-    color: #45464d;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -86,12 +88,12 @@
 }
 
 .settings-icon-btn:hover {
-    background-color: #e6e8ea;
+    background-color: var(--bg-button-secondary);
 }
 
 .settings-add-btn {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
     font-weight: 750;
     padding: 8px 24px;
     border-radius: 8px;
@@ -117,7 +119,7 @@
     width: 32px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1px solid #c6c6cd;
+    border: 1px solid var(--border-color);
     margin-left: 16px;
 }
 
@@ -144,13 +146,13 @@
 .settings-title {
     font-size: 32px;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .settings-desc {
-    color: #45464d;
+    color: var(--text-secondary);
     font-size: 16px;
     margin: 4px 0 0 0;
 }
@@ -185,7 +187,7 @@
     border-radius: 12px;
     background: transparent;
     border: none;
-    color: #45464d;
+    color: var(--text-secondary);
     cursor: pointer;
     font-size: 16px;
     text-align: left;
@@ -198,19 +200,23 @@
 }
 
 .settings-tab-btn:hover {
-    background-color: #e6e8ea;
+    background-color: var(--bg-button-secondary);
 }
 
 .settings-tab-btn:hover .material-symbols-outlined {
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .settings-tab-btn.active {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
     border-left: 4px solid #0051d5;
-    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-card);
     font-weight: 700;
+}
+
+.logout-tab-btn:hover {
+    background-color: rgba(186, 26, 26, 0.08) !important;
 }
 
 /* Right Content Column */
@@ -229,28 +235,29 @@
 
 /* Settings Cards */
 .settings-section-card {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
-    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-    border: 1px solid rgba(198, 198, 205, 0.3);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
     overflow: hidden;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .section-card-header {
     padding: 24px;
-    border-bottom: 1px solid rgba(198, 198, 205, 0.3);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .section-card-title {
     font-size: 24px;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .section-card-subtitle {
     font-size: 16px;
-    color: #45464d;
+    color: var(--text-secondary);
     margin: 4px 0 0 0;
 }
 
@@ -270,7 +277,7 @@
 
 .settings-row-item + .settings-row-item {
     padding-top: 32px;
-    border-top: 1px solid rgba(198, 198, 205, 0.2);
+    border-top: 1px solid var(--border-color);
 }
 
 .row-item-info {
@@ -280,7 +287,7 @@
 .row-item-title {
     font-size: 18px;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -301,7 +308,7 @@
 
 .row-item-desc {
     font-size: 16px;
-    color: #45464d;
+    color: var(--text-secondary);
     margin: 4px 0 0 0;
     line-height: 1.5;
 }
@@ -309,9 +316,9 @@
 .row-item-action-btn {
     flex-shrink: 0;
     padding: 8px 24px;
-    border: 1px solid #000000;
+    border: 1px solid var(--text-primary);
     background-color: transparent;
-    color: #000000;
+    color: var(--text-primary);
     font-weight: 700;
     border-radius: 8px;
     cursor: pointer;
@@ -320,8 +327,8 @@
 }
 
 .row-item-action-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
 }
 
 .row-item-action-btn:active {
@@ -329,13 +336,13 @@
 }
 
 .row-item-action-btn.secondary-btn {
-    border-color: #76777d;
-    color: #45464d;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
 }
 
 .row-item-action-btn.secondary-btn:hover {
-    background-color: #eceef0;
-    color: #000000;
+    background-color: var(--bg-button-secondary);
+    color: var(--text-primary);
 }
 
 /* Preferences Dual Cards */
@@ -352,13 +359,14 @@
 }
 
 .preference-card {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-    border: 1px solid rgba(198, 198, 205, 0.3);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .pref-card-icon {
@@ -384,13 +392,13 @@
 .pref-card-title {
     font-size: 24px;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
 .pref-card-desc {
     font-size: 16px;
-    color: #45464d;
+    color: var(--text-secondary);
     margin: 0 0 24px 0;
     line-height: 1.5;
 }
@@ -411,7 +419,7 @@
 
 .toggle-text {
     font-size: 16px;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .switch-toggle {
@@ -428,7 +436,7 @@
 }
 
 .switch-toggle.off {
-    background-color: #c6c6cd;
+    background-color: var(--border-color);
 }
 
 .switch-circle {
@@ -452,15 +460,15 @@
 /* Dropdown select setting */
 .settings-select {
     width: 100%;
-    background-color: #f2f4f6;
-    border: 1px solid #c6c6cd;
+    background-color: var(--bg-search);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     height: 48px;
     padding-left: 16px;
     padding-right: 16px;
     font-size: 16px;
     font-family: inherit;
-    color: #000000;
+    color: var(--text-primary);
     outline: none;
     box-sizing: border-box;
     transition: all 0.2s;
@@ -473,11 +481,11 @@
 
 /* Browser Extension Card Banner */
 .extension-banner-card {
-    background-color: #131b2e;
+    background: linear-gradient(135deg, #0051d5 0%, #082f49 100%);
     color: #ffffff;
     padding: 32px;
     border-radius: 16px;
-    box-shadow: 0 15px 20px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-card);
     position: relative;
     overflow: hidden;
 }

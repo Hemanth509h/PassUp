@@ -8,9 +8,10 @@
     flex-direction: column;
     gap: 32px;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f8fafc;
+    font-family: inherit;
+    background-color: var(--bg-app);
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .security-header {
@@ -20,13 +21,13 @@
 .security-title {
     font-size: 32px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .security-subtitle {
-    color: #475569;
+    color: var(--text-secondary);
     font-size: 16px;
     margin: 6px 0 0 0;
 }
@@ -41,17 +42,18 @@
 /* Large Gauge Card */
 .score-card {
     grid-column: span 12;
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
     padding: 32px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.02), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @media (min-width: 1024px) {
@@ -65,7 +67,7 @@
     top: 16px;
     right: 16px;
     font-size: 120px;
-    color: #f1f5f9;
+    color: var(--bg-app);
     opacity: 0.8;
     pointer-events: none;
 }
@@ -86,7 +88,7 @@
 }
 
 .gauge-bg {
-    stroke: #f1f5f9;
+    stroke: var(--bg-app);
 }
 
 .gauge-fill {
@@ -106,14 +108,14 @@
 .gauge-value {
     font-size: 48px;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-primary);
     line-height: 1;
 }
 
 .gauge-label {
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 8px;
@@ -137,7 +139,7 @@
 
 .score-description {
     margin: 8px 0 0 0;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 14px;
     max-width: 280px;
     line-height: 1.5;
@@ -146,13 +148,14 @@
 /* Trend Graph Card */
 .trend-card {
     grid-column: span 12;
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
     padding: 32px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.02), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @media (min-width: 1024px) {
@@ -171,7 +174,7 @@
 .trend-title {
     font-size: 20px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -181,24 +184,24 @@
 }
 
 .time-filter-btn {
-    background-color: #f1f5f9;
+    background-color: var(--bg-badge);
     border: none;
     padding: 6px 16px;
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
-    color: #475569;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .time-filter-btn:hover {
-    background-color: #e2e8f0;
+    background-color: var(--bg-button-secondary);
 }
 
 .time-filter-btn.active {
-    background-color: #0f172a;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
 }
 
 .graph-container {
@@ -219,12 +222,12 @@
     pointer-events: none;
     padding-top: 16px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #cbd5e1;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .grid-line {
     width: 100%;
-    border-top: 1px dashed rgba(203, 213, 225, 0.5);
+    border-top: 1px dashed var(--border-color);
 }
 
 .graph-bars {
@@ -240,7 +243,7 @@
 
 .graph-bar-wrapper {
     flex: 1;
-    background-color: #f1f5f9;
+    background-color: var(--bg-badge);
     border-radius: 8px 8px 0 0;
     cursor: pointer;
     position: relative;
@@ -248,11 +251,11 @@
 }
 
 .graph-bar-wrapper:hover {
-    background-color: #cbd5e1;
+    background-color: var(--bg-button-secondary-hover);
 }
 
 .graph-bar-wrapper.active {
-    background-color: #cbd5e1;
+    background-color: var(--bg-button-secondary-hover);
 }
 
 .graph-bar-wrapper.highlight {
@@ -264,8 +267,8 @@
     top: -36px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #0f172a;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
     font-size: 10px;
     font-weight: 600;
     padding: 4px 8px;
@@ -286,7 +289,7 @@
     margin-top: 16px;
     padding-left: 16px;
     padding-right: 16px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
@@ -307,14 +310,14 @@
 }
 
 .security-stat-card {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.02), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
-    border-left: 4px solid #cbd5e1;
+    box-shadow: var(--shadow-card);
+    border-left: 4px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .security-stat-card:hover {
@@ -383,12 +386,12 @@
 .sec-stat-title {
     font-size: 20px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
 .sec-stat-desc {
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 14px;
     margin: 0;
 }
@@ -396,16 +399,17 @@
 /* At Risk Entries List */
 .risk-card {
     grid-column: span 12;
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.02), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+    box-shadow: var(--shadow-card);
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .risk-header {
     padding: 24px 32px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -414,7 +418,7 @@
 .risk-title {
     font-size: 20px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -444,7 +448,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 24px 32px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
 }
 
@@ -453,7 +457,7 @@
 }
 
 .risk-item:hover {
-    background-color: #f8fafc;
+    background-color: var(--bg-button-secondary);
 }
 
 .risk-item-left {
@@ -465,7 +469,7 @@
 .risk-item-logo {
     width: 48px;
     height: 48px;
-    background-color: #f1f5f9;
+    background-color: var(--bg-badge);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -488,13 +492,13 @@
 .risk-item-name {
     font-size: 18px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .risk-item-email {
     font-size: 14px;
-    color: #64748b;
+    color: var(--text-secondary);
     margin: 4px 0 0 0;
 }
 
@@ -542,15 +546,15 @@
 
 .risk-item-issue-desc {
     font-size: 12px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     margin-top: 4px;
 }
 
 .change-pwd-btn {
     padding: 10px 24px;
-    border: 2px solid #000000;
+    border: 2px solid var(--text-primary);
     background-color: transparent;
-    color: #000000;
+    color: var(--text-primary);
     border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -562,8 +566,8 @@
 }
 
 .change-pwd-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--text-primary);
+    color: var(--bg-card);
 }
 
 .change-pwd-btn:active {
@@ -590,6 +594,6 @@
 
 .security-footer-text {
     font-size: 12px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     margin: 0;
 }
