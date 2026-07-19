@@ -1,0 +1,2 @@
+# Exclude the backend folder from Vercel deployment
+backend/
