@@ -16,7 +16,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://pass-up.vercel.app/"],
+    origin: ["http://localhost:3000", "https://pass-up.vercel.app", "https://pass-up.vercel.app/"],
     credentials: true
   })
 );
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/api-status", (req, res) => {
   res.json({ status: "OK" });
 });
 
