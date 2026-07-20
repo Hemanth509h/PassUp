@@ -1,46 +1,25 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import LodingCard from "./components/loding";
 import Api from "./__api/api";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    let intervalId: any;
+    // Ping the health endpoint in the background to spin up the server
+    Api.health().catch(console.error);
 
-    const checkHealth = async () => {
-      try {
-        const res = await Api.health();
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
 
-        if (res.status === "OK") {
-          setLoading(false);
-          if (intervalId) {
-            clearInterval(intervalId);
-          }
-          router.push('/login');
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    checkHealth();
-    intervalId = setInterval(checkHealth, 1000);
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
+    if (token && user) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/login');
+    }
   }, [router]);
 
-  return (
-    <>
-      {loading ? <LodingCard /> : null}
-    </>
-  );
+  return null;
 }

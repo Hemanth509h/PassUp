@@ -5,6 +5,7 @@ import '../Auth.css';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { useRouter } from 'next/navigation';
+import Api from '@/app/__api/api';
 
 export default function RegisterPage() {
     const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
@@ -14,8 +15,11 @@ export default function RegisterPage() {
     const { register, user, loading: authLoading } = useAuth();
     const router = useRouter();
 
-    // Redirect to dashboard if already logged in
+    // Redirect to dashboard if already logged in and warm up the server
     useEffect(() => {
+        // Warm up the server in the background
+        Api.health().catch(console.error);
+
         if (!authLoading && user) {
             router.push('/dashboard');
         }

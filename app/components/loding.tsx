@@ -22,7 +22,7 @@ export default function LodingCard() {
   return (
     <div className="splash-screen">
       <div className="splash-card">
-        <img src="/logo.png" alt="GigFinance" className="splash-logo" />
+        <img src="/logo.png" alt="PassUp" className="splash-logo" />
         <h1 className="splash-title">PassUp</h1>
         <Spinner size="lg" />
         <p className="splash-status">

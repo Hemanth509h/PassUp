@@ -1,8 +1,8 @@
 .spinner {
   display: inline-block;
   flex-shrink: 0;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
+  border: 2px solid var(--border-color, rgba(0, 0, 0, 0.15));
+  border-right-color: #316bf3;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -46,7 +46,8 @@
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  background: var(--background, #f8fafc);
+  background: var(--bg-app, #f8fafc);
+  transition: background-color 0.3s ease;
 }
 
 .splash-card {
@@ -55,11 +56,13 @@
   align-items: center;
   gap: var(--space-md, 16px);
   padding: 48px 40px;
-  background: var(--surface, #fff);
+  background: var(--bg-card, #fff);
   border-radius: 20px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-card, 0 4px 32px rgba(0,0,0,0.08));
+  border: 1px solid var(--border-color, transparent);
   min-width: 280px;
   text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .splash-logo {
@@ -72,24 +75,25 @@
 .splash-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--primary, #1a7a5e);
+  color: var(--text-primary, #0f172a);
   margin: 0;
   letter-spacing: -0.5px;
 }
 
 .splash-status {
   font-size: 0.9rem;
-  color: var(--on-surface-variant, #666);
+  color: var(--text-secondary, #64748b);
   margin: 0;
   font-weight: 500;
 }
 
 .splash-note {
   font-size: 0.8rem;
-  color: var(--on-surface-variant, #888);
+  color: var(--text-secondary, #64748b);
   margin: 0;
   max-width: 240px;
   line-height: 1.5;
+  opacity: 0.85;
 }
 
 @keyframes spin {

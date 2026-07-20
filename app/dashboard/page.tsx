@@ -23,6 +23,24 @@ const getLogoUrl = (url: string, title: string) => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=0051d5&color=fff&size=128&bold=true`;
 };
 
+const SkeletonCard = () => (
+    <div className="vault-card skeleton-card">
+        <div className="card-top">
+            <div className="card-logo skeleton-element skeleton-avatar"></div>
+            <div className="card-top-right">
+                <span className="skeleton-element skeleton-badge"></span>
+            </div>
+        </div>
+        <div className="card-info">
+            <div className="skeleton-element skeleton-title"></div>
+            <div className="skeleton-element skeleton-subtitle"></div>
+        </div>
+        <div className="card-password-container">
+            <div className="skeleton-element skeleton-password"></div>
+        </div>
+    </div>
+);
+
 export default function DashboardPage() {
     const { user, loading } = useAuth();
     const router = useRouter();
@@ -74,7 +92,7 @@ export default function DashboardPage() {
         return () => window.removeEventListener('refresh-vault-entries', fetchEntries);
     }, []);
 
-    if (loading || (user && loadingEntries)) {
+    if (loading) {
         return <LodingCard />;
     }
 
@@ -134,7 +152,13 @@ export default function DashboardPage() {
                         </div>
                         <div className="stat-info">
                             <p className="stat-label">Total Logins</p>
-                            <p className="stat-value">{totalLogins}</p>
+                            <p className="stat-value">
+                                {loadingEntries ? (
+                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '32px', height: '28px', borderRadius: '4px' }}></span>
+                                ) : (
+                                    totalLogins
+                                )}
+                            </p>
                         </div>
                     </div>
                     <div className="stat-card">
@@ -143,7 +167,13 @@ export default function DashboardPage() {
                         </div>
                         <div className="stat-info">
                             <p className="stat-label">Secure Score</p>
-                            <p className="stat-value">{secureScore}%</p>
+                            <p className="stat-value">
+                                {loadingEntries ? (
+                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '48px', height: '28px', borderRadius: '4px' }}></span>
+                                ) : (
+                                    `${secureScore}%`
+                                )}
+                            </p>
                         </div>
                     </div>
                     <div className="stat-card">
@@ -152,7 +182,13 @@ export default function DashboardPage() {
                         </div>
                         <div className="stat-info">
                             <p className="stat-label">Weak Passwords</p>
-                            <p className="stat-value">{weakPasswords}</p>
+                            <p className="stat-value">
+                                {loadingEntries ? (
+                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '32px', height: '28px', borderRadius: '4px' }}></span>
+                                ) : (
+                                    weakPasswords
+                                )}
+                            </p>
                         </div>
                     </div>
                     <div className="stat-card">
@@ -161,7 +197,13 @@ export default function DashboardPage() {
                         </div>
                         <div className="stat-info">
                             <p className="stat-label">Last Sync</p>
-                            <p className="stat-value">Just now</p>
+                            <p className="stat-value">
+                                {loadingEntries ? (
+                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '60px', height: '28px', borderRadius: '4px' }}></span>
+                                ) : (
+                                    'Just now'
+                                )}
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -187,31 +229,41 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="vault-grid">
-                        {vaultItems.map((item) => (
-                            <VaultCard
-                                key={item.id}
-                                id={item.id}
-                                logoUrl={item.logoUrl}
-                                title={item.title}
-                                username={item.username}
-                                email={item.email}
-                                subtitle={item.subtitle}
-                                strength={item.strength}
-                                passwordLength={item.passwordLength}
-                                password={item.password}
-                                url={item.url}
-                                notes={item.notes}
-                                tags={item.tags}
-                            />
-                        ))}
+                        {loadingEntries ? (
+                            <>
+                                <SkeletonCard />
+                                <SkeletonCard />
+                                <SkeletonCard />
+                            </>
+                        ) : (
+                            <>
+                                {vaultItems.map((item) => (
+                                    <VaultCard
+                                        key={item.id}
+                                        id={item.id}
+                                        logoUrl={item.logoUrl}
+                                        title={item.title}
+                                        username={item.username}
+                                        email={item.email}
+                                        subtitle={item.subtitle}
+                                        strength={item.strength}
+                                        passwordLength={item.passwordLength}
+                                        password={item.password}
+                                        url={item.url}
+                                        notes={item.notes}
+                                        tags={item.tags}
+                                    />
+                                ))}
 
-                        {/* Add New Entry */}
-                        <button className="add-card-dashed" onClick={() => window.dispatchEvent(new Event('open-add-entry'))}>
-                            <div className="add-card-icon">
-                                <span className="material-symbols-outlined">add</span>
-                            </div>
-                            <p className="add-card-text">Add New Entry</p>
-                        </button>
+                                {/* Add New Entry */}
+                                <button className="add-card-dashed" onClick={() => window.dispatchEvent(new Event('open-add-entry'))}>
+                                    <div className="add-card-icon">
+                                        <span className="material-symbols-outlined">add</span>
+                                    </div>
+                                    <p className="add-card-text">Add New Entry</p>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </main>
