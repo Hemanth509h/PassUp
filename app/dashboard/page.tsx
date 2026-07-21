@@ -131,6 +131,13 @@ export default function DashboardPage() {
         setToast({ message: 'Master Key deleted successfully!', type: 'success' });
     }
 
+    const timmer = () => {
+        setTimeout(() => {
+            handleClearKey();
+        }, 60000);
+    }
+
+
     const confirmDeleteAction = async () => {
         if (!deleteConfirmItem) return;
         try {
