@@ -121,6 +121,7 @@ export default function AddEntryPage() {
                         className="add-entry-search-input" 
                         placeholder="Search entries..." 
                         type="text" 
+                        autoComplete="off"
                     />
                 </div>
 
@@ -166,7 +167,7 @@ export default function AddEntryPage() {
                                 </span>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="form-fields-stack">
+                            <form onSubmit={handleSubmit} className="form-fields-stack" autoComplete="off">
                                 {/* Basic Information */}
                                 <div className="form-row-grid">
                                     <div className="form-group-item">
@@ -182,6 +183,7 @@ export default function AddEntryPage() {
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 required
+                                                autoComplete="off"
                                             />
                                         </div>
                                     </div>
@@ -197,6 +199,7 @@ export default function AddEntryPage() {
                                                 type="url" 
                                                 value={url}
                                                 onChange={(e) => setUrl(e.target.value)}
+                                                autoComplete="off"
                                             />
                                             <span className="material-symbols-outlined input-trailing-icon">link</span>
                                         </div>
@@ -216,6 +219,7 @@ export default function AddEntryPage() {
                                             type="text" 
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
+                                            autoComplete="off"
                                         />
                                     </div>
                                 </div>
@@ -233,6 +237,7 @@ export default function AddEntryPage() {
                                             type="email" 
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
+                                            autoComplete="off"
                                         />
                                     </div>
                                 </div>
@@ -261,6 +266,7 @@ export default function AddEntryPage() {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 required
+                                                autoComplete="new-password"
                                             />
                                             <button 
                                                 className="password-toggle-btn" 

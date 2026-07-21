@@ -9,6 +9,7 @@ import AddEntryDrawer from '@/app/components/add-entry-drawer';
 import ViewEntryDrawer from '@/app/components/view-entry-drawer';
 import Keyentry from '@/app/components/keyentry';
 import ViewPassword from '@/app/components/viewpassword';
+import MobileHeader from '@/app/components/mobile-header';
 import './components/css/layout-wrapper.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             children
           ) : (
             <div className="app-layout-root">
+              <MobileHeader />
               <Navbar />
               <main className="app-main-content">
                 {children}

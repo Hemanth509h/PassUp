@@ -222,6 +222,7 @@ export default function DashboardPage() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        autoComplete="off"
                     />
                 </div>
                 <div className="header-actions">

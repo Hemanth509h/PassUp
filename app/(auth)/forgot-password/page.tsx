@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
                 <div className="auth-title">Reset your password</div>
                 <div className="auth-subtitle">Enter your email and a new password to reset your account.</div>
 
-                <form className="auth-form" onSubmit={() => { }}>
+                <form className="auth-form" onSubmit={() => { }} autoComplete="off">
 
                     <div className="auth-field">
                         <label>Email</label>
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
                             type="email"
                             name="email"
                             placeholder="you@example.com"
-                            autoComplete="email"
+                            autoComplete="off"
                             required
                             autoFocus
                         />

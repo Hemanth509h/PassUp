@@ -127,8 +127,7 @@ export default function ViewEntryDrawer() {
         setDeleting(false);
     };
 
-    // Form submit / Update
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitting(true);
         setError(null);
@@ -154,6 +153,7 @@ export default function ViewEntryDrawer() {
             });
 
             if (res && res.status === 'success') {
+                e.currentTarget.reset();
                 handleClose();
                 window.dispatchEvent(new Event('refresh-vault-entries'));
             } else {
@@ -205,7 +205,7 @@ export default function ViewEntryDrawer() {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="drawer-form-content">
+                <form onSubmit={handleSubmit} className="drawer-form-content" autoComplete="off">
                     <div className="drawer-scroll-area">
                         {/* Title / Name */}
                         <div className="drawer-form-group">
@@ -220,6 +220,7 @@ export default function ViewEntryDrawer() {
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 required
+                                autoComplete="off"
                             />
                         </div>
 
@@ -236,6 +237,7 @@ export default function ViewEntryDrawer() {
                                     type="url"
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
+                                    autoComplete="off"
                                 />
                                 <span className="material-symbols-outlined drawer-input-icon">link</span>
                             </div>
@@ -254,6 +256,7 @@ export default function ViewEntryDrawer() {
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
+                                    autoComplete="off"
                                 />
                             </div>
 
@@ -268,6 +271,7 @@ export default function ViewEntryDrawer() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="off"
                                 />
                             </div>
                         </div>
@@ -287,6 +291,7 @@ export default function ViewEntryDrawer() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
+                                        autoComplete="new-password"
                                     />
                                     <button
                                         className="drawer-password-toggle"

@@ -54,6 +54,7 @@ body {
     
     .app-main-content {
         margin-left: 0 !important;
+        padding-top: 60px; /* Space for mobile-header */
         padding-bottom: 96px; /* Space for BottomNavBar */
     }
     
@@ -91,6 +92,11 @@ body {
         left: 0 !important;
         padding-left: 16px !important;
         padding-right: 16px !important;
+        top: 60px !important; /* Push down below mobile-header */
+    }
+
+    .dashboard-main, .settings-main {
+        padding-top: 140px !important; /* Prevent overlap with fixed headers on mobile */
     }
 }
 

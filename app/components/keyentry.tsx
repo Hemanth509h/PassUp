@@ -20,7 +20,7 @@ export default function Keyentry() {
 
     if (!isopen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError(null);
 
@@ -34,6 +34,8 @@ export default function Keyentry() {
             return;
         }
         localStorage.setItem('masterkey', masterKey);
+        setMasterKey('');
+        e.currentTarget.reset();
         setIsOpen(false);
     };
 
@@ -51,7 +53,7 @@ export default function Keyentry() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="key-entry-form">
+                <form onSubmit={handleSubmit} className="key-entry-form" autoComplete="off">
                     <div className="key-entry-input-group">
                         <label className="key-entry-label">
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>vpn_key</span>

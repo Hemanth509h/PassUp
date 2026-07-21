@@ -77,7 +77,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
             <div className="auth-field">
               <label>Email</label>
               <input
@@ -86,7 +86,7 @@ export default function LoginPage() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="you@example.com"
-                autoComplete="email"
+                autoComplete="off"
                 required
                 autoFocus
               />
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="••••••••"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
               />
             </div>

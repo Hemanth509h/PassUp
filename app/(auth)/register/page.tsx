@@ -77,7 +77,7 @@ export default function RegisterPage() {
                         {error}
                     </div>
                 )}
-                <form className="auth-form" onSubmit={handleRegister}>
+                <form className="auth-form" onSubmit={handleRegister} autoComplete="off">
                     <div className="auth-field">
                         <label>Full Name</label>
                         <input
@@ -86,7 +86,7 @@ export default function RegisterPage() {
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             placeholder="Your name"
-                            autoComplete="name"
+                            autoComplete="off"
                             required
                             autoFocus
                         />
@@ -99,7 +99,7 @@ export default function RegisterPage() {
                             value={form.email}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
                             placeholder="you@example.com"
-                            autoComplete="email"
+                            autoComplete="off"
                             required
                         />
                     </div>

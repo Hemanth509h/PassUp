@@ -35,6 +35,7 @@ export default function SettingsPage() {
                         className="settings-search-input"
                         placeholder="Search settings, keys, users..."
                         type="text"
+                        autoComplete="off"
                     />
                 </div>
                 <div className="settings-actions">
@@ -122,7 +123,7 @@ export default function SettingsPage() {
                                         </div>
 
                                         {/* Form */}
-                                        <form onSubmit={(e) => { e.preventDefault(); alert('Profile settings saved successfully.'); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <form onSubmit={(e) => { e.preventDefault(); alert('Profile settings saved successfully.'); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} autoComplete="off">
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                                 <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Full Name</label>
                                                 <input
@@ -131,6 +132,7 @@ export default function SettingsPage() {
                                                     onChange={(e) => setProfileName(e.target.value)}
                                                     className="settings-select"
                                                     style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                                                    autoComplete="off"
                                                 />
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -141,6 +143,7 @@ export default function SettingsPage() {
                                                     disabled
                                                     className="settings-select"
                                                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', cursor: 'not-allowed' }}
+                                                    autoComplete="off"
                                                 />
                                                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Email address is linked to your vault account and cannot be modified.</span>
                                             </div>
@@ -153,6 +156,7 @@ export default function SettingsPage() {
                                                     placeholder="+1 (555) 000-0000"
                                                     className="settings-select"
                                                     style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                                                    autoComplete="off"
                                                 />
                                             </div>
 

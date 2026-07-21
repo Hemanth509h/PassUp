@@ -19,7 +19,7 @@ export default function Navbar() {
                         <img
                             alt="VaultGuard Logo"
                             className="logo-image"
-                            src="logo.png"
+                            src="/logo.png"
                         />
                         <div>
                             <h1 className="logo-title">VaultGuard</h1>
