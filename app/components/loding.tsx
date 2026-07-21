@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import './Loading.css';
+import './css/Loading.css';
 
 export const Spinner = ({ size = 'md', label = 'Loading' }) => (
   <span className={`spinner spinner-${size}`} role="status" aria-label={label} />

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/(auth)/AuthContext';
-import './keyentry.css';
+import './css/keyentry.css';
 
 export default function Keyentry() {
     const [isopen, setIsOpen] = useState(false);

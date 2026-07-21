@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Api from '../__api/api';
-import './add-entry-drawer.css';
+import './css/add-entry-drawer.css';
 
 export default function AddEntryDrawer() {
     const [isOpen, setIsOpen] = useState(false);

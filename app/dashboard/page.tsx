@@ -223,10 +223,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="header-actions">
                     <div className="header-icons">
-                        <button className="icon-button">
-                            <span className="material-symbols-outlined">notifications</span>
-                            <span className="badge-dot"></span>
-                        </button>
+
                         <button className="icon-button" onClick={() => router.push('/settings')}>
                             <span className="material-symbols-outlined">account_circle</span>
                         </button>

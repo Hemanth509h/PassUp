@@ -3,7 +3,7 @@
 import { useAuth } from "../(auth)/AuthContext";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import "./navbar.css";
+import "./css/navbar.css";
 
 export default function Navbar() {
     const { logout } = useAuth();

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import './viewpassword.css';
+import './css/viewpassword.css';
 import Api from '../__api/api';
 
 export default function ViewPassword() {

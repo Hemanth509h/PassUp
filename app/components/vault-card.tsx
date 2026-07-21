@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Api from '../__api/api';
-import './vault-card.css';
+import './css/vault-card.css';
 
 interface VaultCardProps {
     entryID: string;

@@ -9,7 +9,7 @@ import AddEntryDrawer from '@/app/components/add-entry-drawer';
 import ViewEntryDrawer from '@/app/components/view-entry-drawer';
 import Keyentry from '@/app/components/keyentry';
 import ViewPassword from '@/app/components/viewpassword';
-import './components/layout-wrapper.css';
+import './components/css/layout-wrapper.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

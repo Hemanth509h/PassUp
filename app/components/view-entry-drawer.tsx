@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Api from '../__api/api';
-import './view-entry-drawer.css';
+import './css/view-entry-drawer.css';
 
 export default function ViewEntryDrawer() {
     const [isOpen, setIsOpen] = useState(false);
@@ -132,7 +132,7 @@ export default function ViewEntryDrawer() {
         e.preventDefault();
         setSubmitting(true);
         setError(null);
-        
+
         if (!username && !email) {
             setError('Please enter either a Username or Email address.');
             setSubmitting(false);
@@ -141,7 +141,7 @@ export default function ViewEntryDrawer() {
 
         try {
             const strengthLabel = strength.label === 'None' ? 'Medium' : strength.label.includes('Superior') ? 'Strong' : strength.label.includes('Very Strong') ? 'Strong' : strength.label;
-            
+
             const res = await Api.updateEntry(id, {
                 title,
                 url,
@@ -152,7 +152,7 @@ export default function ViewEntryDrawer() {
                 tags: selectedTags,
                 strength: strengthLabel
             });
-            
+
             if (res && res.status === 'success') {
                 handleClose();
                 window.dispatchEvent(new Event('refresh-vault-entries'));
@@ -213,9 +213,9 @@ export default function ViewEntryDrawer() {
                                 <span className="material-symbols-outlined">label</span>
                                 Title / Name
                             </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="e.g. Netflix, Personal Gmail" 
+                            <input
+                                className="drawer-input"
+                                placeholder="e.g. Netflix, Personal Gmail"
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
@@ -230,9 +230,9 @@ export default function ViewEntryDrawer() {
                                 Website URL
                             </label>
                             <div className="drawer-input-wrapper">
-                                <input 
-                                    className="drawer-input" 
-                                    placeholder="https://example.com" 
+                                <input
+                                    className="drawer-input"
+                                    placeholder="https://example.com"
                                     type="url"
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
@@ -248,9 +248,9 @@ export default function ViewEntryDrawer() {
                                     <span className="material-symbols-outlined">person</span>
                                     Username
                                 </label>
-                                <input 
-                                    className="drawer-input" 
-                                    placeholder="john_doe" 
+                                <input
+                                    className="drawer-input"
+                                    placeholder="john_doe"
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
@@ -262,9 +262,9 @@ export default function ViewEntryDrawer() {
                                     <span className="material-symbols-outlined">alternate_email</span>
                                     Email
                                 </label>
-                                <input 
-                                    className="drawer-input" 
-                                    placeholder="john.doe@example.com" 
+                                <input
+                                    className="drawer-input"
+                                    placeholder="john.doe@example.com"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -280,16 +280,16 @@ export default function ViewEntryDrawer() {
                             </label>
                             <div className="drawer-password-row">
                                 <div className="drawer-input-wrapper">
-                                    <input 
-                                        className="drawer-input mono-font" 
+                                    <input
+                                        className="drawer-input mono-font"
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="••••••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
-                                    <button 
-                                        className="drawer-password-toggle" 
+                                    <button
+                                        className="drawer-password-toggle"
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
@@ -298,8 +298,8 @@ export default function ViewEntryDrawer() {
                                         </span>
                                     </button>
                                 </div>
-                                <button 
-                                    className="drawer-refresh-btn" 
+                                <button
+                                    className="drawer-refresh-btn"
                                     type="button"
                                     onClick={handleGeneratePassword}
                                     title="Generate Password"
@@ -311,11 +311,11 @@ export default function ViewEntryDrawer() {
                             {/* Strength Meter */}
                             <div className="drawer-strength-wrapper">
                                 <div className="drawer-strength-track">
-                                    <div 
+                                    <div
                                         className="drawer-strength-bar"
-                                        style={{ 
+                                        style={{
                                             width: `${strength.percent}%`,
-                                            backgroundColor: strength.color 
+                                            backgroundColor: strength.color
                                         }}
                                     ></div>
                                 </div>
@@ -332,9 +332,9 @@ export default function ViewEntryDrawer() {
                                 <span className="material-symbols-outlined">notes</span>
                                 Notes
                             </label>
-                            <textarea 
-                                className="drawer-textarea" 
-                                placeholder="Add recovery codes or additional context..." 
+                            <textarea
+                                className="drawer-textarea"
+                                placeholder="Add recovery codes or additional context..."
                                 rows={3}
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
@@ -349,14 +349,14 @@ export default function ViewEntryDrawer() {
                             </label>
                             <div className="drawer-tags-list">
                                 {(['Work', 'Personal', 'Finance'] as const).map(tag => (
-                                    <span 
+                                    <span
                                         key={tag}
                                         className={`drawer-tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
                                         onClick={() => handleToggleTag(tag)}
                                     >
                                         <span className="material-symbols-outlined">
                                             {tag === 'Work' ? 'work' : tag === 'Personal' ? 'person' : 'finance'}
-                                        </span> 
+                                        </span>
                                         {tag}
                                     </span>
                                 ))}
@@ -377,10 +377,10 @@ export default function ViewEntryDrawer() {
                             </span>
                             {submitting ? 'Saving changes...' : 'Save Changes'}
                         </button>
-                        <button 
-                            className="drawer-delete-btn" 
-                            type="button" 
-                            onClick={handleDelete} 
+                        <button
+                            className="drawer-delete-btn"
+                            type="button"
+                            onClick={handleDelete}
                             disabled={submitting || deleting}
                         >
                             <span className="material-symbols-outlined">delete</span>
