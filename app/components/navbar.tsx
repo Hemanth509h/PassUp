@@ -2,14 +2,12 @@
 
 import { useAuth } from "../(auth)/AuthContext";
 import { usePathname } from "next/navigation";
-import { useTheme } from "../ThemeContext";
 import Link from "next/link";
 import "./navbar.css";
 
 export default function Navbar() {
     const { logout } = useAuth();
     const pathname = usePathname();
-    const { theme, toggleTheme } = useTheme();
 
     const isActive = (path: string) => pathname === path;
 
@@ -47,11 +45,6 @@ export default function Navbar() {
                     </nav>
 
                     <div className="sidebar-footer">
-                        <button className="nav-item theme-toggle-btn-sidebar" onClick={toggleTheme} style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', fontSize: 'inherit' }}>
-                            <span className="material-symbols-outlined">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
-                            <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                        </button>
-
                         <Link className="nav-item footer-item" href="#">
                             <span className="material-symbols-outlined">help_outline</span>
                             <span>Support</span>

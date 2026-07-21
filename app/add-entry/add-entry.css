@@ -161,7 +161,7 @@
 }
 
 .form-card-icon {
-    color: #0051d5;
+    color: #316bf3;
     font-size: 36px !important;
 }
 
@@ -214,7 +214,7 @@
 }
 
 .input-relative-wrapper:focus-within .input-leading-icon {
-    color: #0051d5;
+    color: #316bf3;
 }
 
 .form-input-field {
@@ -235,9 +235,9 @@
 }
 
 .form-input-field:focus {
-    border-color: #0051d5;
+    border-color: #316bf3;
     background-color: var(--bg-input-focus);
-    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+    box-shadow: 0 0 0 2px rgba(49, 107, 243, 0.15);
 }
 
 .form-input-field.password-input {
@@ -274,7 +274,7 @@
 .generate-pwd-link-btn {
     background: none;
     border: none;
-    color: #0051d5;
+    color: #316bf3;
     font-weight: 500;
     cursor: pointer;
     font-size: 14px;
@@ -398,9 +398,9 @@
 }
 
 .form-textarea-field:focus {
-    border-color: #0051d5;
+    border-color: #316bf3;
     background-color: var(--bg-input-focus);
-    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+    box-shadow: 0 0 0 2px rgba(49, 107, 243, 0.15);
 }
 
 /* Category Tags List */
@@ -448,8 +448,8 @@
 }
 
 .add-tag-dashed-btn:hover {
-    border-color: #0051d5;
-    color: #0051d5;
+    border-color: #316bf3;
+    color: #316bf3;
 }
 
 /* Footer Submit Buttons */

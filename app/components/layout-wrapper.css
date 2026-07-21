@@ -1,24 +1,4 @@
-:root, [data-theme="light"] {
-    --bg-app: #f8fafc;
-    --bg-card: #ffffff;
-    --bg-sidebar: #ffffff;
-    --border-color: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --bg-button-secondary: #f1f5f9;
-    --bg-button-secondary-hover: #e2e8f0;
-    --text-button-secondary: #0f172a;
-    --bg-input: #ffffff;
-    --border-input: #cbd5e1;
-    --bg-input-focus: #ffffff;
-    --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.02), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
-    --bg-search: #f2f4f6;
-    --bg-password: #f2f4f6;
-    --bg-badge: #eceef0;
-    --text-badge: #45464d;
-}
-
-[data-theme="dark"] {
+:root {
     --bg-app: #090d16;
     --bg-card: #111827;
     --bg-sidebar: #111827;
@@ -117,4 +97,18 @@ body {
 /* Hide FAB on desktop */
 .mobile-fab {
     display: none;
+}
+
+/* Custom browser autofill override styling to maintain dark theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    border: 1px solid var(--border-color) !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-input) inset !important;
+    font-family: inherit !important;
+    transition: background-color 5000s ease-in-out 0s;
 }

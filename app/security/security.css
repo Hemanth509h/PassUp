@@ -352,18 +352,18 @@
 }
 
 .compromised .sec-stat-icon {
-    background-color: #ffdad6;
-    color: #ba1a1a;
+    background-color: rgba(186, 26, 26, 0.15);
+    color: #ff8b82;
 }
 
 .weak .sec-stat-icon {
-    background-color: #dbe1ff;
-    color: #0051d5;
+    background-color: rgba(49, 107, 243, 0.15);
+    color: #316bf3;
 }
 
 .reused .sec-stat-icon {
-    background-color: #89f5e7;
-    color: #005049;
+    background-color: rgba(12, 148, 136, 0.15);
+    color: #0c9488;
 }
 
 .sec-stat-count {
@@ -530,18 +530,18 @@
 }
 
 .badge-red {
-    background-color: #ffdad6;
-    color: #ba1a1a;
+    background-color: rgba(186, 26, 26, 0.15);
+    color: #ff8b82;
 }
 
 .badge-blue {
-    background-color: #dbe1ff;
-    color: #0051d5;
+    background-color: rgba(49, 107, 243, 0.15);
+    color: #316bf3;
 }
 
 .badge-teal {
-    background-color: #dae2fd;
-    color: #003ea8;
+    background-color: rgba(12, 148, 136, 0.15);
+    color: #0c9488;
 }
 
 .risk-item-issue-desc {

@@ -1,0 +1,326 @@
+/* Vault Card Styles */
+.vault-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(22, 28, 36, 0.7) 0%, rgba(14, 18, 24, 0.8) 100%);
+    border-radius: 16px;
+    padding: 24px 16px 20px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vault-card:hover {
+    border-color: rgba(0, 81, 213, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 81, 213, 0.15);
+}
+
+.vault-card:active {
+    transform: translateY(-2px) scale(0.99);
+}
+
+.card-top {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.card-logo {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    box-sizing: border-box;
+    transition: transform 0.2s ease;
+}
+
+.vault-card:hover .card-logo {
+    transform: scale(1.05);
+    border-color: rgba(0, 81, 213, 0.3);
+}
+
+.card-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.card-top-right {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-badge {
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.card-badge::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+
+.badge-strong {
+    background-color: rgba(12, 148, 136, 0.12);
+    color: #0ddec7;
+}
+
+.badge-strong::before {
+    background-color: #0ddec7;
+}
+
+.badge-medium {
+    background-color: rgba(0, 81, 213, 0.12);
+    color: #4f85ff;
+}
+
+.badge-medium::before {
+    background-color: #4f85ff;
+}
+
+.badge-weak {
+    background-color: rgba(186, 26, 26, 0.12);
+    color: #ff5252;
+}
+
+.badge-weak::before {
+    background-color: #ff5252;
+}
+
+.card-menu-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0.7;
+}
+
+.card-menu-btn:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+.card-menu-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Dropdown Menu */
+.card-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 6px;
+    background-color: #171d26;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 100;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 0;
+    overflow: hidden;
+}
+
+.card-dropdown-delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    color: #ff5252;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.card-dropdown-delete-btn:hover {
+    background-color: rgba(255, 82, 82, 0.08);
+}
+
+.card-dropdown-delete-btn .material-symbols-outlined {
+    font-size: 18px;
+    color: #ff5252;
+}
+
+/* Card Info */
+.card-info {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    transition: color 0.15s;
+    letter-spacing: -0.01em;
+}
+
+.vault-card:hover .card-title {
+    color: #4f85ff;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.8;
+}
+
+.card-subtitle .material-symbols-outlined {
+    font-size: 16px;
+    opacity: 0.6;
+}
+
+/* Tags Styles */
+.card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.card-tag-pill {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 8px;
+    border-radius: 9999px;
+    text-transform: capitalize;
+}
+
+/* List View Layout Overrides */
+.vault-list .vault-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+    min-height: auto;
+    flex-direction: row;
+}
+
+.vault-list .vault-card .card-top {
+    display: contents;
+}
+
+.vault-list .vault-card .card-logo {
+    grid-column: 1;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.vault-list .vault-card .card-info {
+    grid-column: 2;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 2px;
+}
+
+.vault-list .vault-card .card-title {
+    font-size: 16px;
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.vault-list .vault-card .card-subtitle {
+    font-size: 13px;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.vault-list .vault-card .card-tags {
+    justify-content: flex-start;
+    margin-top: 4px;
+}
+
+.vault-list .vault-card .card-top-right {
+    position: static;
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Mobile List View Override */
+@media (max-width: 768px) {
+    .vault-list .vault-card {
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto;
+        gap: 12px;
+        padding: 16px;
+    }
+    .vault-list .vault-card .card-logo {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    .vault-list .vault-card .card-info {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .vault-list .vault-card .card-top-right {
+        position: static;
+        grid-column: 3;
+        grid-row: 1;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+    .vault-list .vault-card .card-badge {
+        display: none;
+    }
+}

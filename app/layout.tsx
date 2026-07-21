@@ -1,42 +1,50 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
+'use client';
+
+import React from "react";
+import { usePathname } from 'next/navigation';
 import { AuthProvider } from "./(auth)/AuthContext";
-import { ThemeProvider } from "./ThemeContext";
-import LayoutWrapper from "./components/layout-wrapper";
+import Navbar from '@/app/components/navbar';
+import BottomNavBar from '@/app/components/bottom-navbar';
+import AddEntryDrawer from '@/app/components/add-entry-drawer';
+import ViewEntryDrawer from '@/app/components/view-entry-drawer';
+import Keyentry from '@/app/components/keyentry';
+import ViewPassword from '@/app/components/viewpassword';
+import './components/layout-wrapper.css';
 
-export const metadata: Metadata = {
-  title: "PassUp",
-  description: "A secure credentials and password manager",
-  manifest: "/manifest.json"
-};
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+  const isAuthPage =
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password');
+
   return (
     <html lang="en">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var savedTheme = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var theme = savedTheme || (prefersDark ? 'dark' : 'light');
-                  document.documentElement.setAttribute('data-theme', theme);
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
+        <title>PassUp</title>
+        <meta name="description" content="A secure credentials and password manager" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
-          </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          {isAuthPage ? (
+            children
+          ) : (
+            <div className="app-layout-root">
+              <Navbar />
+              <main className="app-main-content">
+                {children}
+              </main>
+              <Keyentry />
+              <ViewPassword />
+              <BottomNavBar />
+              <AddEntryDrawer />
+              <ViewEntryDrawer />
+            </div>
+          )}
+        </AuthProvider>
       </body>
     </html>
   );

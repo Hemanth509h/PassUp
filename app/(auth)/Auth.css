@@ -1,34 +1,4 @@
-:root, [data-theme="light"] {
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-glow: rgba(16, 185, 129, 0.15);
-  
-  --surface: rgba(255, 255, 255, 0.95);
-  --surface-bright: #ffffff;
-  --on-surface: #0f172a;
-  --on-surface-variant: #64748b;
-  
-  --outline: #e2e8f0;
-  --outline-variant: #cbd5e1;
-  
-  --error: #ba1a1a;
-  --error-bg: rgba(186, 26, 26, 0.05);
-  --error-border: rgba(186, 26, 26, 0.15);
-  
-  --success: #0c9488;
-  --success-bg: rgba(12, 148, 136, 0.05);
-  --success-border: rgba(12, 148, 136, 0.15);
-
-  --auth-bg-gradient: radial-gradient(circle at 50% 50%, #f8fafc 0%, #e2e8f0 100%);
-  --auth-label-color: #475569;
-  --auth-input-bg: #ffffff;
-  --auth-input-hover-bg: #f8fafc;
-  --auth-logo-text-gradient: linear-gradient(135deg, #0f172a 30%, #059669 100%);
-  --auth-card-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0px rgba(255, 255, 255, 0.6);
-  --auth-card-hover-shadow: 0 28px 56px rgba(15, 23, 42, 0.12), inset 0 1px 0px rgba(255, 255, 255, 0.8), 0 0 30px rgba(16, 185, 129, 0.08);
-}
-
-[data-theme="dark"] {
+:root {
   --primary: #10b981;
   --primary-hover: #34d399;
   --primary-glow: rgba(16, 185, 129, 0.35);
@@ -445,4 +415,15 @@
 
 .auth-alert-warning-text a:hover {
   color: #b45309;
+}
+
+/* Custom browser autofill override styling for Auth inputs to maintain dark theme */
+.auth-field input:-webkit-autofill,
+.auth-field input:-webkit-autofill:hover, 
+.auth-field input:-webkit-autofill:focus {
+    border-color: var(--outline) !important;
+    -webkit-text-fill-color: var(--on-surface) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--auth-input-bg) inset !important;
+    font-family: inherit !important;
+    transition: background-color 5000s ease-in-out 0s;
 }

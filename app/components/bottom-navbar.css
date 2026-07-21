@@ -53,7 +53,7 @@
 }
 
 .bottom-nav-item.active .material-symbols-outlined {
-    color: #0051d5;
+    color: #316bf3;
     transform: translateY(-2px);
 }
 
@@ -74,5 +74,5 @@
 }
 
 .bottom-nav-action-btn:hover .material-symbols-outlined {
-    color: #0051d5;
+    color: #316bf3;
 }

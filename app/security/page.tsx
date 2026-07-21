@@ -18,7 +18,7 @@ const getLogoUrl = (url: string, title: string) => {
             }
         }
     }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=0051d5&color=fff&size=128&bold=true`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=316bf3&color=fff&size=128&bold=true`;
 };
 
 // Password generator helper for securing entries
@@ -387,9 +387,9 @@ export default function SecurityPage() {
 
                     <div className="risk-list">
                         {riskEntries.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#76777d' }}>
+                            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)' }}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#0c9488', marginBottom: '12px' }}>check_circle</span>
-                                <h4 style={{ margin: '0 0 4px 0', color: '#000000', fontWeight: 600 }}>Zero Vulnerabilities Detected</h4>
+                                <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontWeight: 600 }}>Zero Vulnerabilities Detected</h4>
                                 <p style={{ margin: 0, fontSize: '14px' }}>All password values meet security recommendations.</p>
                             </div>
                         ) : (

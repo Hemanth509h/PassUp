@@ -62,9 +62,9 @@
 }
 
 .settings-search-input:focus {
-    border-color: #0051d5;
+    border-color: #316bf3;
     background-color: var(--bg-card);
-    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+    box-shadow: 0 0 0 2px rgba(49, 107, 243, 0.15);
 }
 
 .settings-actions {
@@ -210,7 +210,7 @@
 .settings-tab-btn.active {
     background-color: var(--bg-card);
     color: var(--text-primary);
-    border-left: 4px solid #0051d5;
+    border-left: 4px solid #316bf3;
     box-shadow: var(--shadow-card);
     font-weight: 700;
 }
@@ -380,8 +380,8 @@
 }
 
 .pref-card-icon.blue-bg {
-    background-color: rgba(0, 81, 213, 0.1);
-    color: #0051d5;
+    background-color: rgba(49, 107, 243, 0.1);
+    color: #316bf3;
 }
 
 .pref-card-icon.teal-bg {
@@ -432,7 +432,7 @@
 }
 
 .switch-toggle.on {
-    background-color: #0051d5;
+    background-color: #316bf3;
 }
 
 .switch-toggle.off {
@@ -475,13 +475,13 @@
 }
 
 .settings-select:focus {
-    border-color: #0051d5;
-    box-shadow: 0 0 0 2px rgba(0, 81, 213, 0.15);
+    border-color: #316bf3;
+    box-shadow: 0 0 0 2px rgba(49, 107, 243, 0.15);
 }
 
 /* Browser Extension Card Banner */
 .extension-banner-card {
-    background: linear-gradient(135deg, #0051d5 0%, #082f49 100%);
+    background: linear-gradient(135deg, #316bf3 0%, #082f49 100%);
     color: #ffffff;
     padding: 32px;
     border-radius: 16px;

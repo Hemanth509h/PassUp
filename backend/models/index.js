@@ -11,6 +11,7 @@ const User = mongoose.model('User', userSchema);
 
 const vaultEntrySchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  entryID: { type: String, required: true },
   title: { type: String, required: true },
   url: { type: String },
   username: { type: String },
@@ -21,6 +22,7 @@ const vaultEntrySchema = new mongoose.Schema({
   strength: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
+
 
 const VaultEntry = mongoose.model('VaultEntry', vaultEntrySchema);
 

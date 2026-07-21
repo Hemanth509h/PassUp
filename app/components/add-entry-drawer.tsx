@@ -66,7 +66,7 @@ export default function AddEntryDrawer() {
             return {
                 label: 'Medium',
                 percent: 55,
-                color: '#0051d5',
+                color: '#316bf3',
                 isSecure: false
             };
         }
@@ -123,11 +123,19 @@ export default function AddEntryDrawer() {
             setSubmitting(false);
             return;
         }
-        
+
+        const masterKey = localStorage.getItem('masterkey');
+        if (!masterKey) {
+            setError('Vault is locked. Please configure or enter your Master Key.');
+            setSubmitting(false);
+            return;
+        }
+        const entryID = Math.random().toString(18);
         try {
             const strengthLabel = strength.label === 'None' ? 'Medium' : strength.label.includes('Superior') ? 'Strong' : strength.label.includes('Very Strong') ? 'Strong' : strength.label;
-            
+
             const res = await Api.addEntry({
+                entryID: entryID,
                 title,
                 url,
                 username,
@@ -136,8 +144,8 @@ export default function AddEntryDrawer() {
                 notes,
                 tags: selectedTags,
                 strength: strengthLabel
-            });
-            
+            }, masterKey);
+
             if (res && res.status === 'success') {
                 handleClose();
                 window.dispatchEvent(new Event('refresh-vault-entries'));
@@ -177,9 +185,9 @@ export default function AddEntryDrawer() {
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>label</span>
                                 Title / Name
                             </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="e.g. Netflix, Personal Gmail" 
+                            <input
+                                className="drawer-input"
+                                placeholder="e.g. Netflix, Personal Gmail"
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
@@ -194,9 +202,9 @@ export default function AddEntryDrawer() {
                                 Website URL
                             </label>
                             <div className="drawer-input-wrapper">
-                                <input 
-                                    className="drawer-input" 
-                                    placeholder="https://example.com" 
+                                <input
+                                    className="drawer-input"
+                                    placeholder="https://example.com"
                                     type="url"
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
@@ -205,34 +213,35 @@ export default function AddEntryDrawer() {
                             </div>
                         </div>
 
-                        {/* Username */}
-                        <div className="drawer-form-group">
-                            <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person</span>
-                                Username
-                            </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="john_doe" 
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
+                        {/* Username & Email Row */}
+                        <div className="drawer-form-row">
+                            <div className="drawer-form-group">
+                                <label className="drawer-label">
+                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person</span>
+                                    Username
+                                </label>
+                                <input
+                                    className="drawer-input"
+                                    placeholder="john_doe"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+                            </div>
 
-                        {/* Email */}
-                        <div className="drawer-form-group">
-                            <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>alternate_email</span>
-                                Email
-                            </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="john.doe@example.com" 
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                            <div className="drawer-form-group">
+                                <label className="drawer-label">
+                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>alternate_email</span>
+                                    Email
+                                </label>
+                                <input
+                                    className="drawer-input"
+                                    placeholder="john.doe@example.com"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
                         </div>
 
                         {/* Password */}
@@ -243,16 +252,16 @@ export default function AddEntryDrawer() {
                             </label>
                             <div className="drawer-password-row">
                                 <div className="drawer-input-wrapper">
-                                    <input 
-                                        className="drawer-input mono-font" 
+                                    <input
+                                        className="drawer-input mono-font"
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="••••••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
-                                    <button 
-                                        className="drawer-password-toggle" 
+                                    <button
+                                        className="drawer-password-toggle"
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
@@ -261,8 +270,8 @@ export default function AddEntryDrawer() {
                                         </span>
                                     </button>
                                 </div>
-                                <button 
-                                    className="drawer-refresh-btn" 
+                                <button
+                                    className="drawer-refresh-btn"
                                     type="button"
                                     onClick={handleGeneratePassword}
                                     title="Generate Password"
@@ -274,11 +283,11 @@ export default function AddEntryDrawer() {
                             {/* Strength Meter */}
                             <div className="drawer-strength-wrapper">
                                 <div className="drawer-strength-track">
-                                    <div 
+                                    <div
                                         className="drawer-strength-bar"
-                                        style={{ 
+                                        style={{
                                             width: `${strength.percent}%`,
-                                            backgroundColor: strength.color 
+                                            backgroundColor: strength.color
                                         }}
                                     ></div>
                                 </div>
@@ -295,9 +304,9 @@ export default function AddEntryDrawer() {
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>notes</span>
                                 Notes
                             </label>
-                            <textarea 
-                                className="drawer-textarea" 
-                                placeholder="Add recovery codes or additional context..." 
+                            <textarea
+                                className="drawer-textarea"
+                                placeholder="Add recovery codes or additional context..."
                                 rows={3}
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
@@ -312,14 +321,14 @@ export default function AddEntryDrawer() {
                             </label>
                             <div className="drawer-tags-list">
                                 {(['Work', 'Personal', 'Finance'] as const).map(tag => (
-                                    <span 
+                                    <span
                                         key={tag}
                                         className={`drawer-tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
                                         onClick={() => handleToggleTag(tag)}
                                     >
                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
                                             {tag === 'Work' ? 'work' : tag === 'Personal' ? 'person' : 'finance'}
-                                        </span> 
+                                        </span>
                                         {tag}
                                     </span>
                                 ))}

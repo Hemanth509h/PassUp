@@ -1,5 +1,6 @@
 import express from 'express';
 import { VaultEntry } from '../models/index.js';
+import { encryptText, decryptText } from '../utils/crypto.js';
 
 const router = express.Router();
 
@@ -10,12 +11,12 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ status: 'error', message: 'Unauthorized' });
   }
   const token = authHeader.split(' ')[1];
-  
+
   // Validate if token is a valid MongoDB ObjectId
   if (!token.match(/^[0-9a-fA-F]{24}$/)) {
     return res.status(401).json({ status: 'error', message: 'Session expired. Please log out and log back in.' });
   }
-  
+
   req.userId = token;
   next();
 };
@@ -33,18 +34,24 @@ router.get('/entries', authenticate, async (req, res) => {
 
 // POST /entries - Create a new entry
 router.post('/entries', authenticate, async (req, res) => {
-  const { title, url, username, email, password, notes, tags, strength } = req.body || {};
+  const { entryID, title, url, username, email, password, notes, tags, strength } = req.body || {};
   if (!title || !password || (!username && !email)) {
     return res.status(400).json({ status: 'error', message: 'Title, Password, and either Username or Email are required' });
   }
+  const masterKey = req.headers['x-master-key'];
+  if (!masterKey) {
+    return res.status(400).json({ status: 'error', message: 'Master Key header is required' });
+  }
   try {
+    const encryptedPassword = encryptText(password, masterKey);
     const entry = new VaultEntry({
       userId: req.userId,
+      entryID,
       title,
       url,
       username,
       email,
-      password,
+      password: encryptedPassword,
       notes,
       tags: tags || [],
       strength: strength || 'Medium'
@@ -70,7 +77,11 @@ router.put('/entries/:id', authenticate, async (req, res) => {
     if (username !== undefined) entry.username = username;
     if (email !== undefined) entry.email = email;
     if (password !== undefined) {
-      entry.password = password;
+      const masterKey = req.headers['x-master-key'];
+      if (!masterKey) {
+        return res.status(400).json({ status: 'error', message: 'Master Key header is required to update password' });
+      }
+      entry.password = encryptText(password, masterKey);
       entry.strength = strength || 'Strong';
     }
     if (notes !== undefined) entry.notes = notes;
@@ -93,6 +104,25 @@ router.delete('/entries/:id', authenticate, async (req, res) => {
     res.json({ status: 'success', message: 'Entry deleted successfully' });
   } catch (error) {
     console.error("Delete entry error:", error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// GET /password/:id - Get password for an entry
+router.get('/password/:id', authenticate, async (req, res) => {
+  try {
+    const masterKey = req.headers['x-master-key'];
+    if (!masterKey) {
+      return res.status(400).json({ status: 'error', message: 'Master Key header is required' });
+    }
+    const entry = await VaultEntry.findOne({ _id: req.params.id, userId: req.userId });
+    if (!entry) {
+      return res.status(404).json({ status: 'error', message: 'Entry not found' });
+    }
+    const decrypted = decryptText(entry.password, masterKey);
+    res.json({ status: 'success', data: decrypted });
+  } catch (error) {
+    console.error("Get password error:", error);
     res.status(500).json({ status: 'error', message: error.message });
   }
 });

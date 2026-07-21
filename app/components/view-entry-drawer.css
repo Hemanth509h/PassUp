@@ -1,3 +1,4 @@
+/* View Entry Drawer Styles */
 .drawer-overlay {
     position: fixed;
     top: 0;
@@ -10,7 +11,7 @@
     z-index: 1000;
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* Mobile default: bottom align */
+    align-items: flex-end;
 }
 
 .drawer-container {
@@ -41,7 +42,6 @@
     }
 }
 
-/* Drag handle indicator on mobile top center */
 .drawer-drag-handle {
     width: 40px;
     height: 4px;
@@ -51,10 +51,9 @@
     cursor: pointer;
 }
 
-/* On Desktop: display as a centered modal card */
 @media (min-width: 768px) {
     .drawer-overlay {
-        align-items: center; /* Center align */
+        align-items: center;
     }
 
     .drawer-container {
@@ -81,7 +80,6 @@
     }
 }
 
-/* Inside container content */
 .drawer-header {
     display: flex;
     justify-content: space-between;
@@ -352,37 +350,8 @@
     border-color: #316bf3;
 }
 
-/* Badge card */
-.drawer-badge-card {
-    padding: 16px;
-    background-color: rgba(49, 107, 243, 0.05);
-    border: 1px solid rgba(49, 107, 243, 0.1);
-    border-radius: 16px;
-    display: flex;
-    gap: 16px;
-}
-
-.drawer-badge-icon-wrapper {
-    padding: 8px;
-    background-color: rgba(49, 107, 243, 0.1);
-    border-radius: 12px;
-    color: #316bf3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.drawer-badge-title {
+.drawer-tag-chip .material-symbols-outlined {
     font-size: 14px;
-    font-weight: 700;
-    color: #316bf3;
-    margin: 0;
-}
-
-.drawer-badge-desc {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin: 2px 0 0 0;
 }
 
 /* Bottom Actions Panel */
@@ -427,22 +396,44 @@
     transform: translateY(0) scale(0.98);
 }
 
-.drawer-cancel-btn {
+.drawer-submit-icon {
+    font-variation-settings: "FILL" 1;
+}
+
+.drawer-delete-btn {
     width: 100%;
     padding: 12px;
     background-color: transparent;
-    color: var(--text-secondary);
+    color: #ba1a1a;
     border-radius: 12px;
     font-weight: 600;
     font-size: 14px;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     transition: all 0.2s ease;
 }
 
-.drawer-cancel-btn:hover {
-    background-color: var(--bg-button-secondary);
-    color: var(--text-primary);
+.drawer-delete-btn:hover {
+    background-color: rgba(186, 26, 26, 0.05);
+}
+
+.drawer-delete-btn .material-symbols-outlined {
+    color: #ba1a1a;
+    font-size: 18px;
+}
+
+.drawer-error-msg {
+    color: #ba1a1a;
+    background-color: rgba(186, 26, 26, 0.1);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-align: center;
 }
 
 .mono-font {

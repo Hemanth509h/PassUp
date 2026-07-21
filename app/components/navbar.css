@@ -119,7 +119,7 @@
 }
 
 .nav-item-active {
-    background: #0051d5;
+    background: linear-gradient(135deg, #316bf3 0%, #1a56db 100%);
     color: #ffffff;
     font-weight: 600;
 }

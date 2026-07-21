@@ -56,7 +56,7 @@ export default function AddEntryPage() {
             return {
                 label: 'Medium',
                 percent: 55,
-                color: '#0051d5',
+                color: '#316bf3',
                 isSecure: false
             };
         }

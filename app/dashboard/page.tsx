@@ -20,7 +20,7 @@ const getLogoUrl = (url: string, title: string) => {
             }
         }
     }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=0051d5&color=fff&size=128&bold=true`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=316bf3&color=fff&size=128&bold=true`;
 };
 
 const SkeletonCard = () => (
@@ -35,9 +35,6 @@ const SkeletonCard = () => (
             <div className="skeleton-element skeleton-title"></div>
             <div className="skeleton-element skeleton-subtitle"></div>
         </div>
-        <div className="card-password-container">
-            <div className="skeleton-element skeleton-password"></div>
-        </div>
     </div>
 );
 
@@ -46,6 +43,20 @@ export default function DashboardPage() {
     const router = useRouter();
     const [vaultItems, setVaultItems] = useState<any[]>([]);
     const [loadingEntries, setLoadingEntries] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [deleteConfirmItem, setDeleteConfirmItem] = useState<{ id: string; title: string } | null>(null);
+
+    useEffect(() => {
+        if (toast) {
+            const timer = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
+
+
 
     const fetchEntries = async () => {
         try {
@@ -65,6 +76,26 @@ export default function DashboardPage() {
                     url: entry.url,
                     tags: entry.tags
                 }));
+
+                const savedOrderJson = localStorage.getItem('vault_order');
+                if (savedOrderJson) {
+                    try {
+                        const savedOrder = JSON.parse(savedOrderJson);
+                        if (Array.isArray(savedOrder)) {
+                            items.sort((a: any, b: any) => {
+                                const indexA = savedOrder.indexOf(a.id);
+                                const indexB = savedOrder.indexOf(b.id);
+                                if (indexA === -1 && indexB === -1) return 0;
+                                if (indexA === -1) return 1;
+                                if (indexB === -1) return -1;
+                                return indexA - indexB;
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse saved order:", e);
+                    }
+                }
+
                 setVaultItems(items);
             }
         } catch (e) {
@@ -92,6 +123,55 @@ export default function DashboardPage() {
         return () => window.removeEventListener('refresh-vault-entries', fetchEntries);
     }, []);
 
+    const handleDragStart = (index: number) => {
+        setDraggedIndex(index);
+    };
+    const handleClearKey = () => {
+        localStorage.removeItem("masterkey");
+        setToast({ message: 'Master Key deleted successfully!', type: 'success' });
+    }
+
+    const confirmDeleteAction = async () => {
+        if (!deleteConfirmItem) return;
+        try {
+            const res = await Api.deleteEntry(deleteConfirmItem.id);
+            if (res && res.status === 'success') {
+                fetchEntries();
+                setDeleteConfirmItem(null);
+            } else {
+                alert(res.message || 'Failed to delete entry');
+            }
+        } catch (err) {
+            alert(err instanceof Error ? err.message : String(err));
+        }
+    };
+
+
+
+    const handleDragOver = (e: React.DragEvent, overIndex: number) => {
+        e.preventDefault();
+        if (draggedIndex === null || draggedIndex === overIndex) return;
+
+        const reorderedItems = [...vaultItems];
+        const itemA = processedItems[draggedIndex];
+        const itemB = processedItems[overIndex];
+        const indexA = vaultItems.findIndex(x => x.id === itemA.id);
+        const indexB = vaultItems.findIndex(x => x.id === itemB.id);
+
+        if (indexA !== -1 && indexB !== -1) {
+            const [draggedItem] = reorderedItems.splice(indexA, 1);
+            reorderedItems.splice(indexB, 0, draggedItem);
+
+            localStorage.setItem('vault_order', JSON.stringify(reorderedItems.map(item => item.id)));
+            setVaultItems(reorderedItems);
+            setDraggedIndex(overIndex);
+        }
+    };
+
+    const handleDragEnd = () => {
+        setDraggedIndex(null);
+    };
+
     if (loading) {
         return <LodingCard />;
     }
@@ -103,15 +183,29 @@ export default function DashboardPage() {
     // Dynamic stats calculations
     const totalLogins = vaultItems.length;
     const weakPasswords = vaultItems.filter(item => item.strength === 'Weak').length;
-    const secureScore = totalLogins > 0 
+    const secureScore = totalLogins > 0
         ? Math.round(
             (vaultItems.reduce((acc, item) => {
                 if (item.strength === 'Strong') return acc + 100;
                 if (item.strength === 'Medium') return acc + 60;
                 return acc + 20;
             }, 0) / (totalLogins * 100)) * 100
-          )
+        )
         : 100;
+
+    const filteredItems = vaultItems.filter(item => {
+        const query = searchQuery.toLowerCase();
+        return (
+            item.title?.toLowerCase().includes(query) ||
+            item.username?.toLowerCase().includes(query) ||
+            item.email?.toLowerCase().includes(query) ||
+            item.url?.toLowerCase().includes(query) ||
+            item.notes?.toLowerCase().includes(query) ||
+            item.tags?.some((tag: string) => tag.toLowerCase().includes(query))
+        );
+    });
+
+    const processedItems = [...filteredItems];
 
     return (
         <div className="dashboard-container">
@@ -123,6 +217,8 @@ export default function DashboardPage() {
                         className="search-input"
                         placeholder="Search entries, passwords, or tags..."
                         type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
                 <div className="header-actions">
@@ -136,7 +232,7 @@ export default function DashboardPage() {
                         </button>
                     </div>
                     <button className="add-entry-btn" onClick={() => window.dispatchEvent(new Event('open-add-entry'))}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+                        <span className="material-symbols-outlined">add</span>
                         Add Entry
                     </button>
                 </div>
@@ -154,7 +250,7 @@ export default function DashboardPage() {
                             <p className="stat-label">Total Logins</p>
                             <p className="stat-value">
                                 {loadingEntries ? (
-                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '32px', height: '28px', borderRadius: '4px' }}></span>
+                                    <span className="skeleton-element stat-skeleton-sm"></span>
                                 ) : (
                                     totalLogins
                                 )}
@@ -169,7 +265,7 @@ export default function DashboardPage() {
                             <p className="stat-label">Secure Score</p>
                             <p className="stat-value">
                                 {loadingEntries ? (
-                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '48px', height: '28px', borderRadius: '4px' }}></span>
+                                    <span className="skeleton-element stat-skeleton-md"></span>
                                 ) : (
                                     `${secureScore}%`
                                 )}
@@ -184,7 +280,7 @@ export default function DashboardPage() {
                             <p className="stat-label">Weak Passwords</p>
                             <p className="stat-value">
                                 {loadingEntries ? (
-                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '32px', height: '28px', borderRadius: '4px' }}></span>
+                                    <span className="skeleton-element stat-skeleton-sm"></span>
                                 ) : (
                                     weakPasswords
                                 )}
@@ -199,7 +295,7 @@ export default function DashboardPage() {
                             <p className="stat-label">Last Sync</p>
                             <p className="stat-value">
                                 {loadingEntries ? (
-                                    <span className="skeleton-element" style={{ display: 'inline-block', width: '60px', height: '28px', borderRadius: '4px' }}></span>
+                                    <span className="skeleton-element stat-skeleton-lg"></span>
                                 ) : (
                                     'Just now'
                                 )}
@@ -215,17 +311,10 @@ export default function DashboardPage() {
                             <h2 className="vault-title">Your Vault</h2>
                             <span className="vault-tag">All Entries</span>
                         </div>
-                        <div className="vault-controls">
-                            <button className="control-btn">
-                                <span className="material-symbols-outlined">filter_list</span>
-                            </button>
-                            <button className="control-btn">
-                                <span className="material-symbols-outlined">grid_view</span>
-                            </button>
-                            <button className="control-btn">
-                                <span className="material-symbols-outlined">view_list</span>
-                            </button>
-                        </div>
+                        <button className="clear-key-btn flex items-center gap-1" onClick={handleClearKey}>
+                            <span className="material-symbols-outlined">lock</span>
+                            Clear Key
+                        </button>
                     </div>
 
                     <div className="vault-grid">
@@ -237,8 +326,9 @@ export default function DashboardPage() {
                             </>
                         ) : (
                             <>
-                                {vaultItems.map((item) => (
+                                {processedItems.map((item, index) => (
                                     <VaultCard
+                                        entryID={item.entryID}
                                         key={item.id}
                                         id={item.id}
                                         logoUrl={item.logoUrl}
@@ -252,8 +342,33 @@ export default function DashboardPage() {
                                         url={item.url}
                                         notes={item.notes}
                                         tags={item.tags}
+                                        draggable={searchQuery === ''}
+                                        onDragStart={() => handleDragStart(index)}
+                                        onDragOver={(e) => handleDragOver(e, index)}
+                                        onDelete={() => setDeleteConfirmItem({ id: item.id, title: item.title })}
+                                        onDragEnd={handleDragEnd}
+                                        style={{
+                                            opacity: draggedIndex === index ? 0.4 : 1,
+                                            border: draggedIndex === index ? '2px dashed #316bf3' : undefined,
+                                            cursor: searchQuery === '' ? 'grab' : 'default',
+                                            transition: 'transform 0.15s ease'
+                                        }}
                                     />
                                 ))}
+
+                                {filteredItems.length === 0 && (
+                                    <div className="no-entries-container">
+                                        <span className="material-symbols-outlined no-entries-icon">search_off</span>
+                                        <h3 className="no-entries-title">No entries found</h3>
+                                        <p className="no-entries-desc">We couldn't find any entries matching "{searchQuery}"</p>
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="no-entries-clear-btn"
+                                        >
+                                            Clear search
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Add New Entry */}
                                 <button className="add-card-dashed" onClick={() => window.dispatchEvent(new Event('open-add-entry'))}>
@@ -267,6 +382,29 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </main>
+
+            {toast && (
+                <div className={`toast-notification ${toast.type}`}>
+                    <span className="material-symbols-outlined">check_circle</span>
+                    <span>{toast.message}</span>
+                </div>
+            )}
+
+            {deleteConfirmItem && (
+                <div className="confirm-modal-overlay" onClick={() => setDeleteConfirmItem(null)}>
+                    <div className="confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+                        <div className="confirm-modal-header">
+                            <span className="material-symbols-outlined warning-icon">warning</span>
+                            <h3>Delete Entry</h3>
+                        </div>
+                        <p>Are you sure you want to delete <strong>{deleteConfirmItem.title}</strong>? This action cannot be undone.</p>
+                        <div className="confirm-modal-actions">
+                            <button className="confirm-cancel-btn" onClick={() => setDeleteConfirmItem(null)}>Cancel</button>
+                            <button className="confirm-delete-btn" onClick={confirmDeleteAction}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Api from '../__api/api';
-import './add-entry-drawer.css';
+import './view-entry-drawer.css';
 
 export default function ViewEntryDrawer() {
     const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +82,7 @@ export default function ViewEntryDrawer() {
             return {
                 label: 'Medium',
                 percent: 55,
-                color: '#0051d5'
+                color: '#316bf3'
             };
         }
         if (len < 16) {
@@ -210,7 +210,7 @@ export default function ViewEntryDrawer() {
                         {/* Title / Name */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>label</span>
+                                <span className="material-symbols-outlined">label</span>
                                 Title / Name
                             </label>
                             <input 
@@ -226,7 +226,7 @@ export default function ViewEntryDrawer() {
                         {/* Website URL */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>language</span>
+                                <span className="material-symbols-outlined">language</span>
                                 Website URL
                             </label>
                             <div className="drawer-input-wrapper">
@@ -241,40 +241,41 @@ export default function ViewEntryDrawer() {
                             </div>
                         </div>
 
-                        {/* Username */}
-                        <div className="drawer-form-group">
-                            <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person</span>
-                                Username
-                            </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="john_doe" 
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
+                        {/* Username & Email Row */}
+                        <div className="drawer-form-row">
+                            <div className="drawer-form-group">
+                                <label className="drawer-label">
+                                    <span className="material-symbols-outlined">person</span>
+                                    Username
+                                </label>
+                                <input 
+                                    className="drawer-input" 
+                                    placeholder="john_doe" 
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+                            </div>
 
-                        {/* Email */}
-                        <div className="drawer-form-group">
-                            <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>alternate_email</span>
-                                Email
-                            </label>
-                            <input 
-                                className="drawer-input" 
-                                placeholder="john.doe@example.com" 
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                            <div className="drawer-form-group">
+                                <label className="drawer-label">
+                                    <span className="material-symbols-outlined">alternate_email</span>
+                                    Email
+                                </label>
+                                <input 
+                                    className="drawer-input" 
+                                    placeholder="john.doe@example.com" 
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
                         </div>
 
                         {/* Password */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>lock_open</span>
+                                <span className="material-symbols-outlined">lock_open</span>
                                 Password
                             </label>
                             <div className="drawer-password-row">
@@ -328,7 +329,7 @@ export default function ViewEntryDrawer() {
                         {/* Notes */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>notes</span>
+                                <span className="material-symbols-outlined">notes</span>
                                 Notes
                             </label>
                             <textarea 
@@ -343,7 +344,7 @@ export default function ViewEntryDrawer() {
                         {/* Category Tags */}
                         <div className="drawer-form-group">
                             <label className="drawer-label">
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>local_offer</span>
+                                <span className="material-symbols-outlined">local_offer</span>
                                 Category Tags
                             </label>
                             <div className="drawer-tags-list">
@@ -353,7 +354,7 @@ export default function ViewEntryDrawer() {
                                         className={`drawer-tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
                                         onClick={() => handleToggleTag(tag)}
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                                        <span className="material-symbols-outlined">
                                             {tag === 'Work' ? 'work' : tag === 'Personal' ? 'person' : 'finance'}
                                         </span> 
                                         {tag}
@@ -366,24 +367,23 @@ export default function ViewEntryDrawer() {
                     {/* Actions Panel */}
                     <div className="drawer-actions-panel">
                         {error && (
-                            <div style={{ color: '#ba1a1a', backgroundColor: 'rgba(186, 26, 26, 0.1)', padding: '10px 16px', borderRadius: '8px', fontSize: '14px', marginBottom: '8px', textAlign: 'center' }}>
+                            <div className="drawer-error-msg">
                                 {error}
                             </div>
                         )}
                         <button className="drawer-submit-btn" type="submit" disabled={submitting || deleting}>
-                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            <span className="material-symbols-outlined drawer-submit-icon">
                                 {submitting ? 'hourglass_empty' : 'save'}
                             </span>
                             {submitting ? 'Saving changes...' : 'Save Changes'}
                         </button>
                         <button 
-                            className="drawer-cancel-btn" 
+                            className="drawer-delete-btn" 
                             type="button" 
                             onClick={handleDelete} 
                             disabled={submitting || deleting}
-                            style={{ color: '#ba1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         >
-                            <span className="material-symbols-outlined" style={{ color: '#ba1a1a', fontSize: '18px' }}>delete</span>
+                            <span className="material-symbols-outlined">delete</span>
                             {deleting ? 'Deleting...' : 'Delete Vault Entry'}
                         </button>
                     </div>

@@ -45,7 +45,7 @@ export default function SettingsPage() {
                 <div className="settings-actions">
                     <button className="settings-icon-btn">
                         <span className="material-symbols-outlined">notifications</span>
-                        <span className="badge-dot" style={{ backgroundColor: '#0051d5' }}></span>
+                        <span className="badge-dot" style={{ backgroundColor: '#316bf3' }}></span>
                     </button>
                     <button className="settings-add-btn" onClick={() => window.dispatchEvent(new Event('open-add-entry'))}>
                         <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add</span>
@@ -136,8 +136,8 @@ export default function SettingsPage() {
                                 <div className="section-card-content">
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                         {/* Avatar display */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid rgba(198, 198, 205, 0.3)' }}>
-                                            <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #0051d5' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '24px', borderBottom: '1px solid var(--border-color)' }}>
+                                            <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #316bf3' }}>
                                                 <img 
                                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqWA3TER4hYkzVRLD4fdfWyWg2cIFud32cVorFld9XQtRqMlL6DnUfWtprBUmRNYlboKEB1tRlkRrV2Uci-ezw5C67nyL4PuBJa9WF7_KxSzBZb84O2_1JN6b5xh0sPVHssKQyDLlJkPpbDS7ZX0HAG5SxIXpOSreerEMiuGZ6ZP4fPU9SBVcU3tmWvKi1g90-FxoevYEN9J-_WHAtsjtnpkCo8UcNmtBVP4b2S-NaC28iWHd-iCIC" 
                                                     alt="User Profile" 
@@ -145,9 +145,9 @@ export default function SettingsPage() {
                                                 />
                                             </div>
                                             <div>
-                                                <h4 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#000000' }}>{profileName}</h4>
-                                                <p style={{ margin: '4px 0 0 0', color: '#45464d', fontSize: '14px' }}>{profileEmail}</p>
-                                                <span style={{ display: 'inline-block', marginTop: '8px', padding: '4px 12px', backgroundColor: 'rgba(0, 81, 213, 0.1)', color: '#0051d5', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>
+                                                <h4 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{profileName}</h4>
+                                                <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '14px' }}>{profileEmail}</p>
+                                                <span style={{ display: 'inline-block', marginTop: '8px', padding: '4px 12px', backgroundColor: 'rgba(49, 107, 243, 0.1)', color: '#316bf3', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>
                                                     PREMIUM VAULT ACCOUNT
                                                 </span>
                                             </div>
@@ -156,40 +156,40 @@ export default function SettingsPage() {
                                         {/* Form */}
                                         <form onSubmit={(e) => { e.preventDefault(); alert('Profile settings saved successfully.'); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                <label style={{ fontSize: '14px', fontWeight: 600, color: '#45464d' }}>Full Name</label>
+                                                <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Full Name</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileName} 
                                                     onChange={(e) => setProfileName(e.target.value)} 
                                                     className="settings-select"
-                                                    style={{ backgroundColor: '#ffffff' }}
+                                                    style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                                                 />
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                <label style={{ fontSize: '14px', fontWeight: 600, color: '#45464d' }}>Email Address</label>
+                                                <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Email Address</label>
                                                 <input 
                                                     type="email" 
                                                     value={profileEmail} 
                                                     disabled
                                                     className="settings-select"
-                                                    style={{ backgroundColor: '#eceef0', color: '#76777d', cursor: 'not-allowed' }}
+                                                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', cursor: 'not-allowed' }}
                                                 />
-                                                <span style={{ fontSize: '12px', color: '#76777d' }}>Email address is linked to your vault account and cannot be modified.</span>
+                                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Email address is linked to your vault account and cannot be modified.</span>
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                <label style={{ fontSize: '14px', fontWeight: 600, color: '#45464d' }}>Phone Number</label>
+                                                <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Phone Number</label>
                                                 <input 
                                                     type="tel" 
                                                     value={profilePhone} 
                                                     onChange={(e) => setProfilePhone(e.target.value)} 
                                                     placeholder="+1 (555) 000-0000"
                                                     className="settings-select"
-                                                    style={{ backgroundColor: '#ffffff' }}
+                                                    style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                                                 />
                                             </div>
 
                                             <div style={{ marginTop: '10px', display: 'flex', gap: '12px' }}>
-                                                <button type="submit" className="row-item-action-btn" style={{ border: 'none', backgroundColor: '#0051d5', color: '#ffffff' }}>
+                                                <button type="submit" className="row-item-action-btn" style={{ border: 'none', backgroundColor: '#316bf3', color: '#ffffff' }}>
                                                     Save Changes
                                                 </button>
                                                 <button 

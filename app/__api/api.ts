@@ -105,15 +105,19 @@ const Api = {
             return { status: 'error', message: error instanceof Error ? error.message : String(error) };
         }
     },
-    addEntry: async (entryData: any) => {
+    addEntry: async (entryData: any, masterKey?: string) => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+            if (masterKey) {
+                headers['X-Master-Key'] = masterKey;
+            }
             const res = await fetch(`${API_URL}/entries`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers,
                 body: JSON.stringify(entryData)
             });
             return await res.json();
@@ -138,20 +142,44 @@ const Api = {
             return { status: 'error', message: error instanceof Error ? error.message : String(error) };
         }
     },
-    updateEntry: async (id: string, entryData: any) => {
+    updateEntry: async (id: string, entryData: any, masterKey?: string) => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+            if (masterKey) {
+                headers['X-Master-Key'] = masterKey;
+            }
             const res = await fetch(`${API_URL}/entries/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers,
                 body: JSON.stringify(entryData)
             });
             return await res.json();
         } catch (error) {
             console.error("API updateEntry call error:", error);
+            return { status: 'error', message: error instanceof Error ? error.message : String(error) };
+        }
+    },
+    getpassword: async (id: string, masterKey?: string) => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+            if (masterKey) {
+                headers['X-Master-Key'] = masterKey;
+            }
+            const res = await fetch(`${API_URL}/password/${id}`, {
+                method: 'GET',
+                headers,
+            });
+            return await res.json();
+        } catch (error) {
+            console.error("API getEntries call error:", error);
             return { status: 'error', message: error instanceof Error ? error.message : String(error) };
         }
     }
