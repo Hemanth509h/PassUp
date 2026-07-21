@@ -127,6 +127,7 @@ export default function AddEntryDrawer() {
         const masterKey = localStorage.getItem('masterkey');
         if (!masterKey) {
             setError('Vault is locked. Please configure or enter your Master Key.');
+            window.dispatchEvent(new Event('key-entry'));
             setSubmitting(false);
             return;
         }

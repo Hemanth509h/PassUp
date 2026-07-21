@@ -179,11 +179,7 @@ export default function DashboardPage() {
         setDraggedIndex(null);
     };
 
-    if (loading) {
-        return <LodingCard />;
-    }
-
-    if (!user) {
+    if (!loading && !user) {
         return null;
     }
 
