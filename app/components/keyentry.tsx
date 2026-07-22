@@ -35,7 +35,6 @@ export default function Keyentry() {
         }
         localStorage.setItem('masterkey', masterKey);
         setMasterKey('');
-        e.currentTarget.reset();
         setIsOpen(false);
     };
 

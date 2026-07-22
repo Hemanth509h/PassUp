@@ -153,7 +153,6 @@ export default function ViewEntryDrawer() {
             });
 
             if (res && res.status === 'success') {
-                e.currentTarget.reset();
                 handleClose();
                 window.dispatchEvent(new Event('refresh-vault-entries'));
             } else {

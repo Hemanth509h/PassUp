@@ -147,7 +147,6 @@ export default function AddEntryDrawer() {
             }, masterKey);
 
             if (res && res.status === 'success') {
-                e.currentTarget.reset();
                 handleClose();
                 window.dispatchEvent(new Event('refresh-vault-entries'));
             } else {
