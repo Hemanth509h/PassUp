@@ -1,5 +1,5 @@
 import express from 'express';
-import { VaultEntry } from '../models/index.js';
+import { VaultEntry, MasterKeyEntry } from '../models/index.js';
 import { encryptText, decryptText } from '../utils/crypto.js';
 
 const router = express.Router();
@@ -25,6 +25,23 @@ const authenticate = (req, res, next) => {
 router.get('/entries', authenticate, async (req, res) => {
   try {
     const entries = await VaultEntry.find({ userId: req.userId }).sort({ createdAt: -1 });
+    const masterKey = req.headers['x-master-key'];
+    
+    if (masterKey) {
+      const decryptedEntries = entries.map(entry => {
+        const entryObj = entry.toObject();
+        try {
+          if (entryObj.password) {
+            entryObj.password = decryptText(entryObj.password, masterKey);
+          }
+        } catch (err) {
+          console.error(`Failed to decrypt password for entry ${entry._id}:`, err);
+        }
+        return entryObj;
+      });
+      return res.json({ status: 'success', entries: decryptedEntries });
+    }
+    
     res.json({ status: 'success', entries });
   } catch (error) {
     console.error("Fetch entries error:", error);
@@ -124,6 +141,118 @@ router.get('/password/:id', authenticate, async (req, res) => {
   } catch (error) {
     console.error("Get password error:", error);
     res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+
+router.get('/check-master-key', authenticate, async (req, res) => {
+  const masterKey = req.headers['x-master-key'];
+
+  if (!masterKey) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Master Key header is required'
+    });
+  }
+  try {
+    let entry = await MasterKeyEntry.findOne({ userId: req.userId });
+    console.log("Master Key Entry:", entry);
+
+    if (!entry) {
+      // First-time setup: Encrypt a verification token and store it
+      const encrypted = encryptText('Pass-up@2026', masterKey);
+      entry = new MasterKeyEntry({
+        userId: req.userId,
+        masterkeyencrypt: encrypted
+      });
+      await entry.save();
+      return res.json({ status: 'success', message: 'Master key set up successfully', data: encrypted });
+    }
+
+    // Since encryptText uses random salt and IV, we cannot simply encrypt again and compare strings.
+    // Instead, we decrypt the stored value using the provided masterKey. If it successfully
+    // decrypts back to 'Pass-up@2026', we know the key is correct.
+    try {
+      const decrypted = decryptText(entry.masterkeyencrypt, masterKey);
+      if (decrypted === 'Pass-up@2026') {
+        return res.json({ status: 'success', message: 'Master key verified', data: entry.masterkeyencrypt });
+      } else {
+        return res.status(400).json({ status: 'error', message: 'Incorrect Master Key' });
+      }
+    } catch (decryptError) {
+      return res.status(400).json({ status: 'error', message: 'Incorrect Master Key' });
+    }
+  } catch (error) {
+    console.error("Check master key error:", error);
+    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+  }
+});
+
+// POST /update-master-key - Update the user's master key and re-encrypt credentials
+router.post('/update-master-key', authenticate, async (req, res) => {
+  const { oldMasterKey, newMasterKey } = req.body || {};
+  if (!oldMasterKey || !newMasterKey) {
+    return res.status(400).json({ status: 'error', message: 'Current master key and new master key are required.' });
+  }
+  if (newMasterKey.length < 4) {
+    return res.status(400).json({ status: 'error', message: 'New master key must be at least 4 characters.' });
+  }
+  try {
+    // 1. Verify oldMasterKey
+    const entry = await MasterKeyEntry.findOne({ userId: req.userId });
+    if (!entry) {
+      // If they don't have a master key set yet (first-time), we can just set it
+      const encrypted = encryptText('Pass-up@2026', newMasterKey);
+      const newEntry = new MasterKeyEntry({
+        userId: req.userId,
+        masterkeyencrypt: encrypted
+      });
+      await newEntry.save();
+      return res.json({ status: 'success', message: 'Master key set up successfully.' });
+    }
+
+    try {
+      const decrypted = decryptText(entry.masterkeyencrypt, oldMasterKey);
+      if (decrypted !== 'Pass-up@2026') {
+        return res.status(400).json({ status: 'error', message: 'Incorrect current Master Key.' });
+      }
+    } catch (decryptError) {
+      return res.status(400).json({ status: 'error', message: 'Incorrect current Master Key.' });
+    }
+
+    // 2. Fetch all user vault entries
+    const entries = await VaultEntry.find({ userId: req.userId });
+
+    // 3. Decrypt entries using old master key and re-encrypt using new master key
+    const reEncryptedEntries = [];
+    for (const vaultEntry of entries) {
+      try {
+        const decryptedPassword = decryptText(vaultEntry.password, oldMasterKey);
+        const encryptedNewPassword = encryptText(decryptedPassword, newMasterKey);
+        reEncryptedEntries.push({
+          entry: vaultEntry,
+          newPassword: encryptedNewPassword
+        });
+      } catch (err) {
+        console.error(`Error decrypting password for entry ${vaultEntry._id}:`, err);
+      }
+    }
+
+    // 4. Perform database updates
+    for (const item of reEncryptedEntries) {
+      item.entry.password = item.newPassword;
+      await item.entry.save();
+    }
+
+    // 5. Update MasterKeyEntry verification token
+    const encryptedNewToken = encryptText('Pass-up@2026', newMasterKey);
+    entry.masterkeyencrypt = encryptedNewToken;
+    await entry.save();
+
+    res.json({ status: 'success', message: 'Master key updated successfully.' });
+  } catch (error) {
+    console.error("Update master key error:", error);
+    res.status(500).json({ status: 'error', message: error.message || 'Internal server error.' });
   }
 });
 

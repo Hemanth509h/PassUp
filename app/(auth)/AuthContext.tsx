@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Api from '@/app/__api/api';
 
 interface User {
+  id: string;
   email: string;
   name?: string;
 }
@@ -43,7 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await Api.login(email, password);
       if (res && res.status === 'success') {
-        const loggedUser = { email, name: email.split('@')[0] }; // Mock name
+        const loggedUser = {
+          id: res.user.id,
+          email: res.user.email || email,
+          name: res.user.name || email.split('@')[0]
+        };
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(loggedUser));
         setUser(loggedUser);
@@ -60,7 +65,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await Api.register(name, email, password);
       if (res && res.status === 'success') {
-        const loggedUser = { email, name };
+        const loggedUser = {
+          id: res.user.id,
+          email: res.user.email || email,
+          name: res.user.name || name
+        };
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(loggedUser));
         setUser(loggedUser);

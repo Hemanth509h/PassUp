@@ -19,18 +19,32 @@ export default function ViewPassword() {
 
             const { id, username, email } = customEvent.detail;
 
-            setIsOpen(true);
+            setShowPassword('');
 
             const masterKey = localStorage.getItem('masterkey') || '';
             try {
                 const response = await Api.getpassword(id, masterKey);
                 if (response && response.status === 'success') {
                     setShowPassword(response.data);
+                    setIsOpen(true);
                 } else {
-                    console.error(response?.message || 'Failed to fetch password');
+                    localStorage.removeItem('masterkey');
+                    setIsOpen(false);
+                    window.dispatchEvent(
+                        new CustomEvent('key-entry', {
+                            detail: { error: response?.message || 'Incorrect Master Key. Please re-enter.' }
+                        })
+                    );
                 }
             } catch (error) {
                 console.error(error);
+                localStorage.removeItem('masterkey');
+                setIsOpen(false);
+                window.dispatchEvent(
+                    new CustomEvent('key-entry', {
+                        detail: { error: error instanceof Error ? error.message : 'Decryption failed. Please re-enter Master Key.' }
+                    })
+                );
             }
         };
 

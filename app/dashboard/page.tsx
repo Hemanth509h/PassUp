@@ -60,7 +60,8 @@ export default function DashboardPage() {
 
     const fetchEntries = async () => {
         try {
-            const res = await Api.getEntries();
+            const masterKey = localStorage.getItem('masterkey') || '';
+            const res = await Api.getEntries(masterKey);
             if (res && res.status === 'success' && Array.isArray(res.entries)) {
                 const items = res.entries.map((entry: any) => ({
                     id: entry._id,
@@ -129,12 +130,6 @@ export default function DashboardPage() {
     const handleClearKey = () => {
         localStorage.removeItem("masterkey");
         setToast({ message: 'Master Key deleted successfully!', type: 'success' });
-    }
-
-    const timmer = () => {
-        setTimeout(() => {
-            handleClearKey();
-        }, 60000);
     }
 
 

@@ -53,10 +53,11 @@ export default function SecurityPage() {
 
     const fetchSecurityData = async () => {
         try {
-            const res = await Api.getEntries();
+            const masterKey = localStorage.getItem('masterkey') || '';
+            const res = await Api.getEntries(masterKey);
             if (res && res.status === 'success' && Array.isArray(res.entries)) {
                 setVaultItems(res.entries);
-                
+
                 // Process risk entries
                 const passwordCounts: Record<string, number> = {};
                 res.entries.forEach((item: any) => {
@@ -137,7 +138,7 @@ export default function SecurityPage() {
         try {
             // Generate a strong password and save it in MongoDB Atlas!
             const newPassword = generateStrongPassword();
-            const res = await Api.updateEntry(id, { 
+            const res = await Api.updateEntry(id, {
                 password: newPassword,
                 strength: 'Strong'
             });
@@ -201,7 +202,7 @@ export default function SecurityPage() {
     const reusedCount = vaultItems.filter(item => item.password && passwordCounts[item.password] > 1).length;
 
     // Global security score calculation
-    const globalScore = totalCount > 0 
+    const globalScore = totalCount > 0
         ? Math.round(
             (vaultItems.reduce((acc, item) => {
                 let s = 100;
@@ -212,7 +213,7 @@ export default function SecurityPage() {
                 if (p.length < 6 || p.includes('12345') || p.includes('password')) s -= 35;
                 return acc + Math.max(0, s);
             }, 0) / (totalCount * 100)) * 100
-          )
+        )
         : 100;
 
     let scoreStatus = 'High Security';
@@ -245,21 +246,21 @@ export default function SecurityPage() {
                     </div>
                     <div className="gauge-wrapper">
                         <svg className="gauge-svg" viewBox="0 0 100 100">
-                            <circle 
-                                className="gauge-bg" 
-                                cx="50" 
-                                cy="50" 
-                                fill="transparent" 
-                                r="40" 
+                            <circle
+                                className="gauge-bg"
+                                cx="50"
+                                cy="50"
+                                fill="transparent"
+                                r="40"
                                 stroke="#f1f5f9"
                                 strokeWidth="8"
                             />
-                            <circle 
-                                className={scoreColorClass} 
-                                cx="50" 
-                                cy="50" 
-                                fill="transparent" 
-                                r="40" 
+                            <circle
+                                className={scoreColorClass}
+                                cx="50"
+                                cy="50"
+                                fill="transparent"
+                                r="40"
                                 stroke={globalScore < 50 ? "#ba1a1a" : globalScore < 80 ? "#eab308" : "#0c9488"}
                                 strokeWidth="8"
                                 style={{
@@ -279,7 +280,7 @@ export default function SecurityPage() {
                             {scoreStatus}
                         </p>
                         <p className="score-description">
-                            {totalCount === 0 
+                            {totalCount === 0
                                 ? "Add your accounts to run a security vulnerability analysis."
                                 : `Auditing ${totalCount} passwords. Detected ${compromisedCount} compromised, ${weakCount} weak, and ${reusedCount} reused credentials.`}
                         </p>
@@ -292,7 +293,7 @@ export default function SecurityPage() {
                         <h3 className="trend-title">Score Trends</h3>
                         <div className="trend-time-filters">
                             {(['1W', '1M', '1Y'] as const).map(tab => (
-                                <button 
+                                <button
                                     key={tab}
                                     className={`time-filter-btn ${activeTab === tab ? 'active' : ''}`}
                                     onClick={() => setActiveTab(tab)}
@@ -302,7 +303,7 @@ export default function SecurityPage() {
                             ))}
                         </div>
                     </div>
-                    
+
                     <div className="graph-container">
                         <div className="graph-bars">
                             {/* Mock Graph Bars representing progress up to current score */}
@@ -413,7 +414,7 @@ export default function SecurityPage() {
                                         </div>
 
                                         {entry.status === 'normal' && (
-                                            <button 
+                                            <button
                                                 className="change-pwd-btn"
                                                 onClick={() => handleAutoSecure(entry.id)}
                                             >

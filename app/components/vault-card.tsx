@@ -76,7 +76,13 @@ export default function VaultCard({
                 })
             );
         } else {
-            window.dispatchEvent(new Event('key-entry'));
+            window.dispatchEvent(
+                new CustomEvent('key-entry', {
+                    detail: {
+                        pendingEntry: { id, username, email }
+                    }
+                })
+            );
         }
     };
 

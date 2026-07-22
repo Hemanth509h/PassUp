@@ -22,8 +22,15 @@ const vaultEntrySchema = new mongoose.Schema({
   strength: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
-
-
 const VaultEntry = mongoose.model('VaultEntry', vaultEntrySchema);
 
-export { User, VaultEntry };
+const MasterkeySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  masterkeyencrypt: {
+    type: String
+  }
+});
+
+const MasterKeyEntry = mongoose.model('MasterKeyEntry', MasterkeySchema)
+
+export { User, VaultEntry, MasterKeyEntry };

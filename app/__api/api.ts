@@ -89,15 +89,19 @@ const Api = {
             };
         }
     },
-    getEntries: async () => {
+    getEntries: async (masterKey?: string) => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+            if (masterKey) {
+                headers['X-Master-Key'] = masterKey;
+            }
             const res = await fetch(`${API_URL}/entries`, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers,
             });
             return await res.json();
         } catch (error) {
@@ -180,6 +184,41 @@ const Api = {
             return await res.json();
         } catch (error) {
             console.error("API getEntries call error:", error);
+            return { status: 'error', message: error instanceof Error ? error.message : String(error) };
+        }
+    },
+    masterkey: async (masterKey: string, userid?: string) => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const res = await fetch(`${API_URL}/check-master-key`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'X-Master-Key': masterKey,
+                    'userid': userid || token || ''
+                },
+            });
+            return await res.json();
+        } catch (error) {
+            console.error("API checkMasterKey call error:", error);
+            return { status: 'error', message: error instanceof Error ? error.message : String(error) };
+        }
+    },
+    updateMasterKey: async (oldMasterKey: string, newMasterKey: string) => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const res = await fetch(`${API_URL}/update-master-key`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ oldMasterKey, newMasterKey })
+            });
+            return await res.json();
+        } catch (error) {
+            console.error("API updateMasterKey call error:", error);
             return { status: 'error', message: error instanceof Error ? error.message : String(error) };
         }
     }

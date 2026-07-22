@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../(auth)/AuthContext';
+import Api from '../__api/api';
 import './settings.css';
 
 export default function SettingsPage() {
@@ -16,6 +17,67 @@ export default function SettingsPage() {
     const [profileName, setProfileName] = useState('');
     const [profileEmail, setProfileEmail] = useState('');
     const [profilePhone, setProfilePhone] = useState('');
+
+    // Master Key form state
+    const [showMasterKeyForm, setShowMasterKeyForm] = useState(false);
+    const [currentMasterKey, setCurrentMasterKey] = useState('');
+    const [newMasterKey, setNewMasterKey] = useState('');
+    const [confirmNewMasterKey, setConfirmNewMasterKey] = useState('');
+    const [showCurrentKey, setShowCurrentKey] = useState(false);
+    const [showNewKey, setShowNewKey] = useState(false);
+    const [showConfirmKey, setShowConfirmKey] = useState(false);
+    const [masterKeyError, setMasterKeyError] = useState<string | null>(null);
+    const [masterKeySuccess, setMasterKeySuccess] = useState<string | null>(null);
+    const [isSubmittingMasterKey, setIsSubmittingMasterKey] = useState(false);
+
+    const handleMasterKeySubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setMasterKeyError(null);
+        setMasterKeySuccess(null);
+
+        if (!currentMasterKey || !newMasterKey || !confirmNewMasterKey) {
+            setMasterKeyError('All fields are required.');
+            return;
+        }
+
+        if (newMasterKey.length < 4) {
+            setMasterKeyError('New Master Key must be at least 4 characters.');
+            return;
+        }
+
+        if (newMasterKey !== confirmNewMasterKey) {
+            setMasterKeyError('New Master Key and confirmation do not match.');
+            return;
+        }
+
+        if (currentMasterKey === newMasterKey) {
+            setMasterKeyError('New Master Key must be different from current Master Key.');
+            return;
+        }
+
+        setIsSubmittingMasterKey(true);
+        try {
+            const res = await Api.updateMasterKey(currentMasterKey, newMasterKey);
+            if (res.status === 'success') {
+                localStorage.setItem('masterkey', newMasterKey);
+                setMasterKeySuccess('Master Key updated successfully and all passwords re-encrypted.');
+                setCurrentMasterKey('');
+                setNewMasterKey('');
+                setConfirmNewMasterKey('');
+                setTimeout(() => {
+                    setShowMasterKeyForm(false);
+                    setMasterKeySuccess(null);
+                }, 3000);
+            } else {
+                setMasterKeyError(res.message || 'Failed to update Master Key.');
+            }
+        } catch (err) {
+            console.error("Master key update failed:", err);
+            setMasterKeyError('An error occurred while updating the Master Key.');
+        } finally {
+            setIsSubmittingMasterKey(false);
+        }
+    };
 
     // Sync profile state when user object loads
     useEffect(() => {
@@ -198,6 +260,167 @@ export default function SettingsPage() {
                                         <button className="row-item-action-btn" onClick={() => alert('Password modification is handled through auth provider (mock)')}>
                                             Change Password
                                         </button>
+                                    </div>
+                                    {/* Edit Master Key */}
+                                    <div className="settings-row-item" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%', gap: '24px' }}>
+                                            <div className="row-item-info">
+                                                <h4 className="row-item-title">Master Key</h4>
+                                                <p className="row-item-desc">Change the Master Key used to encrypt your vault passwords. This will decrypt all your vault items with the current key and re-encrypt them with your new key.</p>
+                                            </div>
+                                            <button 
+                                                className={`row-item-action-btn ${showMasterKeyForm ? 'secondary-btn' : ''}`} 
+                                                onClick={() => {
+                                                    setShowMasterKeyForm(!showMasterKeyForm);
+                                                    setMasterKeyError(null);
+                                                    setMasterKeySuccess(null);
+                                                    setCurrentMasterKey('');
+                                                    setNewMasterKey('');
+                                                    setConfirmNewMasterKey('');
+                                                }}
+                                            >
+                                                {showMasterKeyForm ? 'Cancel' : 'Change Master Key'}
+                                            </button>
+                                        </div>
+
+                                        {showMasterKeyForm && (
+                                            <form 
+                                                onSubmit={handleMasterKeySubmit} 
+                                                style={{ 
+                                                    marginTop: '24px', 
+                                                    padding: '24px', 
+                                                    borderRadius: '12px', 
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.01)',
+                                                    border: '1px solid var(--border-color)',
+                                                    display: 'flex', 
+                                                    flexDirection: 'column', 
+                                                    gap: '16px',
+                                                    width: '100%',
+                                                    boxSizing: 'border-box'
+                                                }}
+                                                autoComplete="off"
+                                            >
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                    <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Current Master Key</label>
+                                                    <div style={{ position: 'relative', width: '100%' }}>
+                                                        <input
+                                                            type={showCurrentKey ? 'text' : 'password'}
+                                                            value={currentMasterKey}
+                                                            onChange={(e) => setCurrentMasterKey(e.target.value)}
+                                                            className="settings-select"
+                                                            style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', paddingRight: '44px' }}
+                                                            autoComplete="new-password"
+                                                            placeholder="Enter current Master Key"
+                                                            required
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowCurrentKey(!showCurrentKey)}
+                                                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                                            title={showCurrentKey ? "Hide key" : "Show key"}
+                                                        >
+                                                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                                                {showCurrentKey ? 'visibility_off' : 'visibility'}
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                    <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>New Master Key</label>
+                                                    <div style={{ position: 'relative', width: '100%' }}>
+                                                        <input
+                                                            type={showNewKey ? 'text' : 'password'}
+                                                            value={newMasterKey}
+                                                            onChange={(e) => setNewMasterKey(e.target.value)}
+                                                            className="settings-select"
+                                                            style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', paddingRight: '44px' }}
+                                                            autoComplete="new-password"
+                                                            placeholder="Enter new Master Key"
+                                                            required
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowNewKey(!showNewKey)}
+                                                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                                            title={showNewKey ? "Hide key" : "Show key"}
+                                                        >
+                                                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                                                {showNewKey ? 'visibility_off' : 'visibility'}
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                    <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Confirm New Master Key</label>
+                                                    <div style={{ position: 'relative', width: '100%' }}>
+                                                        <input
+                                                            type={showConfirmKey ? 'text' : 'password'}
+                                                            value={confirmNewMasterKey}
+                                                            onChange={(e) => setConfirmNewMasterKey(e.target.value)}
+                                                            className="settings-select"
+                                                            style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', paddingRight: '44px' }}
+                                                            autoComplete="new-password"
+                                                            placeholder="Confirm new Master Key"
+                                                            required
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowConfirmKey(!showConfirmKey)}
+                                                            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                                            title={showConfirmKey ? "Hide key" : "Show key"}
+                                                        >
+                                                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                                                {showConfirmKey ? 'visibility_off' : 'visibility'}
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {masterKeyError && (
+                                                    <div style={{ color: '#ba1a1a', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginTop: '4px' }}>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#ba1a1a' }}>error</span>
+                                                        {masterKeyError}
+                                                    </div>
+                                                )}
+
+                                                {masterKeySuccess && (
+                                                    <div style={{ color: '#0c9488', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', marginTop: '4px' }}>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#0c9488' }}>check_circle</span>
+                                                        {masterKeySuccess}
+                                                    </div>
+                                                )}
+
+                                                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                                                    <button 
+                                                        type="submit" 
+                                                        disabled={isSubmittingMasterKey}
+                                                        className="row-item-action-btn" 
+                                                        style={{ 
+                                                            border: 'none', 
+                                                            backgroundColor: '#316bf3', 
+                                                            color: '#ffffff',
+                                                            opacity: isSubmittingMasterKey ? 0.7 : 1,
+                                                            cursor: isSubmittingMasterKey ? 'not-allowed' : 'pointer'
+                                                        }}
+                                                    >
+                                                        {isSubmittingMasterKey ? 'Updating...' : 'Update Key'}
+                                                    </button>
+                                                    <button 
+                                                        type="button" 
+                                                        className="row-item-action-btn secondary-btn"
+                                                        onClick={() => {
+                                                            setShowMasterKeyForm(false);
+                                                            setMasterKeyError(null);
+                                                            setMasterKeySuccess(null);
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
                                     </div>
                                     {/* 2FA Setup */}
                                     <div className="settings-row-item">

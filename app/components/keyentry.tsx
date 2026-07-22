@@ -3,17 +3,32 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/(auth)/AuthContext';
 import './css/keyentry.css';
+import Api from '../__api/api';
 
 export default function Keyentry() {
     const [isopen, setIsOpen] = useState(false);
     const [masterKey, setMasterKey] = useState('');
     const [showKey, setShowKey] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { logout } = useAuth();
+    const [pendingEntry, setPendingEntry] = useState<{ id: string; username: string; email: string } | null>(null);
+    const { user, logout } = useAuth();
     useEffect(() => {
-        const handleOpen = () => setIsOpen(true);
-        window.addEventListener('key-entry', handleOpen);
-        return () => window.removeEventListener('key-entry', handleOpen);
+        const handleOpen = (event: Event) => {
+            const customEvent = event as CustomEvent<{ error?: string; pendingEntry?: any }>;
+            if (customEvent.detail?.error) {
+                setError(customEvent.detail.error);
+            } else {
+                setError(null);
+            }
+            if (customEvent.detail?.pendingEntry) {
+                setPendingEntry(customEvent.detail.pendingEntry);
+            } else {
+                setPendingEntry(null);
+            }
+            setIsOpen(true);
+        };
+        window.addEventListener('key-entry', handleOpen as EventListener);
+        return () => window.removeEventListener('key-entry', handleOpen as EventListener);
     }, [])
 
 
@@ -33,14 +48,33 @@ export default function Keyentry() {
             setError('Master Key must be at least 4 characters.');
             return;
         }
-        localStorage.setItem('masterkey', masterKey);
-        setMasterKey('');
-        setIsOpen(false);
+
+        const check_masterkey = async () => {
+            const req = await Api.masterkey(masterKey, user?.id || '');
+            if (req.status === 'error') {
+                setError(req.message);
+            } else {
+                localStorage.setItem('masterkey', masterKey);
+                setMasterKey('');
+                setIsOpen(false);
+                if (pendingEntry) {
+                    window.dispatchEvent(
+                        new CustomEvent('viewpassword', {
+                            detail: pendingEntry
+                        })
+                    );
+                    setPendingEntry(null);
+                }
+            }
+        }
+        check_masterkey();
+
+
     };
 
     return (
-        <div className="key-entry-overlay">
-            <div className="key-entry-card">
+        <div className="key-entry-overlay" onClick={() => setIsOpen(false)}>
+            <div className="key-entry-card" onClick={(e) => e.stopPropagation()}>
                 {/* Glowing lock header */}
                 <div className="key-entry-header">
                     <div className="key-entry-icon-wrapper">
@@ -97,7 +131,10 @@ export default function Keyentry() {
                         <button
                             className="key-entry-logout"
                             type="button"
-                            onClick={() => { setIsOpen(false); }}
+                            onClick={async () => {
+                                setIsOpen(false);
+
+                            }}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>logout</span>
                             Log Out

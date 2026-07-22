@@ -138,6 +138,14 @@ export default function ViewEntryDrawer() {
             return;
         }
 
+        const masterKey = localStorage.getItem('masterkey');
+        if (!masterKey) {
+            setError('Vault is locked. Please configure or enter your Master Key.');
+            window.dispatchEvent(new Event('key-entry'));
+            setSubmitting(false);
+            return;
+        }
+
         try {
             const strengthLabel = strength.label === 'None' ? 'Medium' : strength.label.includes('Superior') ? 'Strong' : strength.label.includes('Very Strong') ? 'Strong' : strength.label;
 
@@ -150,7 +158,7 @@ export default function ViewEntryDrawer() {
                 notes,
                 tags: selectedTags,
                 strength: strengthLabel
-            });
+            }, masterKey);
 
             if (res && res.status === 'success') {
                 handleClose();
