@@ -18,14 +18,12 @@ try {
   console.error('Fatal: Database connection failed during server startup. Exiting...');
   process.exit(1);
 }
-
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://pass-up.vercel.app", "https://pass-up.vercel.app/"],
-    credentials: true
+    origin: true,
+    credentials: true,
   })
 );
-
 // Middleware to parse incoming JSON bodies
 app.use(express.json());
 
