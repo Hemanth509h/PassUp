@@ -5,6 +5,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 import entriesRoutes from "./routes/entries.js";
+import recoveryRoutes from "./routes/recovery.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.get("/api-status", (_req, res) => {
 
 app.use("/", authRoutes);
 app.use("/", entriesRoutes);
+app.use("/", recoveryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

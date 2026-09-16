@@ -1,6 +1,6 @@
 import express from "express";
 
-import { generateToken } from "../middleware/auth.js";
+import { generateToken, protect } from "../middleware/auth.js";
 import User from "../models/User.js";
 import { errorMessage } from "../utils/errors.js";
 
@@ -12,11 +12,41 @@ const userPayload = (user: {
   name: string;
 }) => ({
   _id: user._id,
+  id: String(user._id),
   email: user.email,
   name: user.name,
 });
 
-                       
+router.post("/register", async (req, res) => {
+  const { email, password, name } = req.body || {};
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email and password are required." });
+  }
+  if (String(password).length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters." });
+  }
+  try {
+    const existing = await User.findOne({ email: String(email).toLowerCase() });
+    if (existing) {
+      return res.status(409).json({ message: "An account with this email already exists." });
+    }
+    const user = await User.create({
+      email: String(email).toLowerCase().trim(),
+      password,
+      name: name?.trim() || String(email).split("@")[0],
+    });
+    res.status(201).json({
+      token: generateToken(user._id),
+      user: userPayload(user),
+    });
+  } catch (error) {
+    res.status(500).json({ message: errorMessage(error) });
+  }
+});
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -42,7 +72,6 @@ router.post("/forgot-password", async (req, res) => {
   if (!req.body.email)
     return res.status(400).json({ message: "Email is required." });
   try {
-    // Always return the same message to avoid email enumeration.
     await User.findOne({ email: req.body.email });
     res.json({
       message:
@@ -53,9 +82,9 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-router.get("/me", (req, res) => res.json(userPayload(req.user!)));
+router.get("/me", protect, (req, res) => res.json(userPayload(req.user!)));
 
-router.patch("/profile", async (req, res) => {
+router.patch("/profile", protect, async (req, res) => {
   const { name, password, currentPassword } = req.body;
   try {
     const user = await User.findById(req.user!._id);
