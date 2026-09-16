@@ -9,7 +9,10 @@ import type {
 const TOKEN_KEY = 'passup_auth_token';
 const USER_KEY = 'passup_auth_user';
 const SERVER_STORAGE_KEY = 'passup_server_config';
-const DEFAULT_BASE_URL = 'http://localhost:5000';
+
+export const API_BASE_URL = (
+  process.env.EXPO_PUBLIC_API_URL || ''
+).replace(/\/$/, '');
 
 export async function getBaseUrl(): Promise<string> {
   try {
@@ -23,7 +26,7 @@ export async function getBaseUrl(): Promise<string> {
   } catch {
     // ignore
   }
-  return DEFAULT_BASE_URL;
+  return API_BASE_URL;
 }
 
 export async function saveToken(token: string): Promise<void> {

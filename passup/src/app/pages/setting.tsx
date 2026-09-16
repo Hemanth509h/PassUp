@@ -41,6 +41,7 @@ import {
   AuthUser,
 } from "../types";
 import {
+  API_BASE_URL,
   authApi,
   clearToken,
   clearUser,
@@ -77,7 +78,7 @@ export interface SettingsViewProps {
 }
 
 const DEFAULT_SERVER_CONFIG: ServerSyncConfig = {
-  serverUrl: "http://localhost:5000",
+  serverUrl: API_BASE_URL,
   authToken: "",
   autoSync: false,
   lastSyncStatus: "idle",
@@ -219,7 +220,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       if (propOnTestServerConnection) {
         await propOnTestServerConnection();
       } else {
-        const targetUrl = (serverUrl.trim() || "http://localhost:5000").replace(/\/$/, "");
+        const targetUrl = (serverUrl.trim() || API_BASE_URL).replace(/\/$/, "");
         const token = authToken.trim() || (await getToken()) || "";
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
@@ -786,7 +787,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <TextInput
             value={serverUrl}
             onChangeText={setServerUrl}
-            placeholder="http://localhost:5000"
+            placeholder={API_BASE_URL || "API server URL"}
             placeholderTextColor="#64748b"
             autoCapitalize="none"
             autoCorrect={false}
