@@ -149,20 +149,6 @@ export const authApi = {
     return data;
   },
 
-  async register(credentials: {
-    email: string;
-    password: string;
-    name?: string;
-  }) {
-    const data = await apiFetch('/register', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
-    if (data.token) await saveToken(data.token);
-    if (data.user) await saveUser(data.user);
-    return data;
-  },
-
   async me() {
     return apiFetch('/me');
   },

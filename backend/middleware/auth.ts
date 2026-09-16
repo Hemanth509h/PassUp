@@ -4,13 +4,21 @@ import type { Types } from "mongoose";
 
 import User from "../models/User.js";
 
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
+export function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET?.trim();
   if (secret) return secret;
   if (process.env.NODE_ENV === "production") {
-    throw new Error("JWT_SECRET must be set in production.");
+    throw new Error(
+      "Server misconfigured: JWT_SECRET is missing. Set it in the host environment.",
+    );
   }
   return "passup_dev_secret_change_in_prod";
+}
+
+/** Fail fast in production when JWT_SECRET is unset. */
+export function assertJwtSecretConfigured(): void {
+  if (process.env.NODE_ENV !== "production") return;
+  getJwtSecret();
 }
 
 /** Public API routes that do not require a Bearer token. */

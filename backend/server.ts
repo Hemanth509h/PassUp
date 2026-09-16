@@ -3,12 +3,22 @@ import cors from "cors";
 import express from "express";
 
 import connectDB from "./config/db.js";
+import { assertJwtSecretConfigured } from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import entriesRoutes from "./routes/entries.js";
 import recoveryRoutes from "./routes/recovery.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+try {
+  assertJwtSecretConfigured();
+} catch (error) {
+  console.error(
+    error instanceof Error ? error.message : "Fatal: JWT_SECRET is not configured.",
+  );
+  process.exit(1);
+}
 
 try {
   await connectDB();

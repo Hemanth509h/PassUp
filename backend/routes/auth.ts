@@ -30,14 +30,15 @@ router.post("/register", async (req, res) => {
       .json({ message: "Password must be at least 8 characters." });
   }
   try {
-    const existing = await User.findOne({ email: String(email).toLowerCase() });
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
       return res.status(409).json({ message: "An account with this email already exists." });
     }
     const user = await User.create({
-      email: String(email).toLowerCase().trim(),
+      email: normalizedEmail,
       password,
-      name: name?.trim() || String(email).split("@")[0],
+      name: name?.trim() || normalizedEmail.split("@")[0],
     });
     res.status(201).json({
       token: generateToken(user._id),
@@ -55,7 +56,9 @@ router.post("/login", async (req, res) => {
       .status(400)
       .json({ message: "Email and password are required." });
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email: String(email).toLowerCase().trim(),
+    });
     if (!user || !(await user.comparePassword(password)))
       return res.status(401).json({ message: "Invalid email or password." });
     res.json({ token: generateToken(user._id), user: userPayload(user) });

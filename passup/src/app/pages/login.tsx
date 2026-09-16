@@ -21,17 +21,14 @@ import {
   ArrowRight,
   Shield,
   AlertCircle,
-  UserRound,
 } from 'lucide-react-native';
 
 import { authApi } from '../../apis/apis';
-import { colors, radii, spacing } from '../../theme';
+import { colors, radii } from '../../theme';
 
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -47,37 +44,19 @@ export default function LoginScreen() {
       return;
     }
 
-    if (mode === 'register' && trimmedPassword.length < 8) {
-      setErrorMessage('Password must be at least 8 characters.');
-      return;
-    }
-
     if (isLoading) return;
 
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      if (mode === 'register') {
-        await authApi.register({
-          email: trimmedEmail,
-          password: trimmedPassword,
-          name: name.trim() || undefined,
-        });
-      } else {
-        await authApi.login({
-          email: trimmedEmail,
-          password: trimmedPassword,
-        });
-      }
+      await authApi.login({
+        email: trimmedEmail,
+        password: trimmedPassword,
+      });
       router.replace('/pages/mainpage');
     } catch (error: any) {
-      setErrorMessage(
-        error?.message ||
-          (mode === 'register'
-            ? 'Could not create account.'
-            : 'Invalid email or password.'),
-      );
+      setErrorMessage(error?.message || 'Invalid email or password.');
     } finally {
       setIsLoading(false);
     }
@@ -117,48 +96,11 @@ export default function LoginScreen() {
           </View>
 
           <Text style={styles.brand}>PassUp</Text>
-          <Text style={styles.title}>
-            {mode === 'login' ? 'Sign in to your vault' : 'Create your vault'}
-          </Text>
+          <Text style={styles.title}>Sign in to your vault</Text>
           <Text style={styles.description}>
-            {mode === 'login'
-              ? 'Authenticate your account, then unlock encrypted passwords with your Master Key.'
-              : 'Create an account. Next you’ll set a Master Key to encrypt everything.'}
+            Authenticate your account, then unlock encrypted passwords with your
+            Master Key.
           </Text>
-
-          <View style={styles.modeSwitch}>
-            <TouchableOpacity
-              style={[styles.modeTab, mode === 'login' && styles.modeTabActive]}
-              onPress={() => setMode('login')}
-              disabled={isLoading}
-            >
-              <Text
-                style={[
-                  styles.modeTabText,
-                  mode === 'login' && styles.modeTabTextActive,
-                ]}
-              >
-                Sign In
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.modeTab,
-                mode === 'register' && styles.modeTabActive,
-              ]}
-              onPress={() => setMode('register')}
-              disabled={isLoading}
-            >
-              <Text
-                style={[
-                  styles.modeTabText,
-                  mode === 'register' && styles.modeTabTextActive,
-                ]}
-              >
-                Register
-              </Text>
-            </TouchableOpacity>
-          </View>
 
           {errorMessage ? (
             <View style={styles.errorContainer}>
@@ -168,28 +110,6 @@ export default function LoginScreen() {
           ) : null}
 
           <View style={styles.form}>
-            {mode === 'register' ? (
-              <View style={styles.field}>
-                <Text style={styles.label}>Display Name</Text>
-                <View style={styles.inputContainer}>
-                  <UserRound
-                    size={16}
-                    color={colors.textDim}
-                    style={styles.inputIcon}
-                  />
-                  <TextInput
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Your name"
-                    placeholderTextColor={colors.textDim}
-                    editable={!isLoading}
-                    autoCapitalize="words"
-                    style={styles.input}
-                  />
-                </View>
-              </View>
-            ) : null}
-
             <View style={styles.field}>
               <Text style={styles.label}>Email</Text>
               <View style={styles.inputContainer}>
@@ -258,15 +178,11 @@ export default function LoginScreen() {
               {isLoading ? (
                 <>
                   <ActivityIndicator size="small" color={colors.text} />
-                  <Text style={styles.loginButtonText}>
-                    {mode === 'register' ? 'Creating account…' : 'Signing in…'}
-                  </Text>
+                  <Text style={styles.loginButtonText}>Signing in…</Text>
                 </>
               ) : (
                 <>
-                  <Text style={styles.loginButtonText}>
-                    {mode === 'register' ? 'Create account' : 'Sign in to vault'}
-                  </Text>
+                  <Text style={styles.loginButtonText}>Sign in to vault</Text>
                   <ArrowRight size={16} color={colors.text} />
                 </>
               )}
@@ -373,34 +289,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     paddingHorizontal: 8,
-  },
-  modeSwitch: {
-    flexDirection: 'row',
-    backgroundColor: colors.bgElevated,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    padding: 4,
-    marginBottom: 16,
-  },
-  modeTab: {
-    flex: 1,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modeTabActive: {
-    backgroundColor: colors.primary,
-  },
-  modeTabText: {
-    color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  modeTabTextActive: {
-    color: colors.text,
-    fontWeight: '700',
   },
   errorContainer: {
     width: '100%',
