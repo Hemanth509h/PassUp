@@ -1,2 +1,30 @@
-
+# dependencies
 node_modules/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# build / compile
+dist/
+build/
+*.tsbuildinfo
+
+# logs & debug
+logs/
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.*
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# coverage / test
+coverage/
+.nyc_output/

@@ -1,139 +1,79 @@
+import express from "express";
 
+import { generateToken } from "../middleware/auth.js";
+import User from "../models/User.js";
+import { errorMessage } from "../utils/errors.js";
 
-
-
-import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import AdminUser from "../model/AdminUser";
 const router = express.Router();
-import {
-  AUTH_COOKIE_NAME,
-  authCookieOptions,
-  JWT_SECRET,
-  getAuthToken,
-} from "../config/security";
 
+const userPayload = (user: {
+  _id: unknown;
+  email: string;
+  name: string;
+}) => ({
+  _id: user._id,
+  email: user.email,
+  name: user.name,
+});
 
+                       
 
-export const login = async (req: Request, res: Response): Promise<Response> => {
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password)
+    return res
+      .status(400)
+      .json({ message: "Email and password are required." });
   try {
-    const { email, password, token: deviceToken, firebaseToken } = req.body || {};
+    const user = await User.findOne({ email });
+    if (!user || !(await user.comparePassword(password)))
+      return res.status(401).json({ message: "Invalid email or password." });
+    res.json({ token: generateToken(user._id), user: userPayload(user) });
+  } catch (error) {
+    res.status(500).json({ message: errorMessage(error) });
+  }
+});
 
-    if (!email || !password) {
-      return res.status(400).json({
-        status: "error",
-        success: false,
-        message: "Email and password are required",
-      });
-    }
+router.post("/logout", (_req, res) =>
+  res.json({ message: "Logged out successfully." }),
+);
 
-    const normalizedEmail = email.toLowerCase().trim();
-    const admin = await AdminUser.findOne({ email: normalizedEmail });
-
-    if (!admin) {
-      return res.status(401).json({
-        status: "error",
-        success: false,
-        message: "Invalid admin email or password",
-      });
-    }
-
-    if (!admin.isActive) {
-      return res.status(403).json({
-        status: "error",
-        success: false,
-        message: "Admin account is deactivated",
-      });
-    }
-
-    const passwordMatches = await bcrypt.compare(password, admin.password);
-    if (!passwordMatches) {
-      return res.status(401).json({
-        status: "error",
-        success: false,
-        message: "Invalid admin email or password",
-      });
-    }
-
-    const incomingDeviceToken = firebaseToken || deviceToken;
-    if (incomingDeviceToken && typeof incomingDeviceToken === "string") {
-      admin.firebaseToken = incomingDeviceToken.trim();
-      await admin.save();
-    }
-
-    const authToken = jwt.sign(
-      {
-        userId: admin._id,
-        id: admin._id,
-        email: admin.email,
-        name: admin.name,
-        role: "admin",
-      },
-      JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.cookie(AUTH_COOKIE_NAME, authToken, authCookieOptions);
-
-    return res.status(200).json({
-      status: "success",
-      success: true,
-      token: authToken,
-      user: {
-        id: admin._id.toString(),
-        _id: admin._id.toString(),
-        name: admin.name,
-        email: admin.email,
-        role: "admin",
-        firebaseToken: admin.firebaseToken,
-        isActive: admin.isActive,
-      },
+router.post("/forgot-password", async (req, res) => {
+  if (!req.body.email)
+    return res.status(400).json({ message: "Email is required." });
+  try {
+    // Always return the same message to avoid email enumeration.
+    await User.findOne({ email: req.body.email });
+    res.json({
+      message:
+        "If an account exists for this email, password reset instructions will be sent.",
     });
   } catch (error) {
-    console.error("[ADMIN] Login error:", error);
-    return res.status(500).json({
-      status: "error",
-      success: false,
-      message: "Internal server error during admin login",
-    });
+    res.status(500).json({ message: errorMessage(error) });
   }
-};
+});
 
+router.get("/me", (req, res) => res.json(userPayload(req.user!)));
 
-// POST /register endpoint
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body || {};
-  console.log("Registration request received in backend:", { name, email });
-
-  if (!name || !email || !password) {
-    return res.status(400).json({ status: "error", message: "Name, email, and password are required" });
-  }
-
+router.patch("/profile", async (req, res) => {
+  const { name, password, currentPassword } = req.body;
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ status: "error", message: "Email is already registered" });
+    const user = await User.findById(req.user!._id);
+    if (!user) return res.status(404).json({ message: "User not found." });
+    if (name !== undefined) user.name = name;
+    if (password) {
+      if (!currentPassword)
+        return res.status(400).json({ message: "Current password required." });
+      if (!(await user.comparePassword(currentPassword)))
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect." });
+      user.password = password;
     }
-
-    const hashedPassword = hashPassword(password);
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword
-    });
     await user.save();
-
-    res.json({ 
-      status: "success", 
-      user: {
-        name: user.name,
-        email: user.email
-      }
-    });
+    res.json(userPayload(user));
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ status: "error", message: "Internal server error" });
+    res.status(500).json({ message: errorMessage(error) });
   }
 });
 
