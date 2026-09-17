@@ -1,7 +1,12 @@
 import express from "express";
 
 import { protect } from "../middleware/auth.js";
-import { MasterKeyEntry, RecoveryKit, VaultEntry } from "../models/index.js";
+import {
+  MasterKeyEntry,
+  RecoveryKit,
+  VaultStore,
+  deleteAllMongoEntries,
+} from "../models/index.js";
 import { encryptText } from "../utils/crypto.js";
 import { errorMessage } from "../utils/errors.js";
 import {
@@ -131,8 +136,11 @@ router.post("/recovery/reset-master-key", protect, async (req, res) => {
       });
     }
 
-    await VaultEntry.deleteMany({ userId: req.userId });
+    // Wipe SQLite cache + MongoDB durable store (old ciphertext unrecoverable)
+    VaultStore.deleteAllForUser(req.userId!);
+    await deleteAllMongoEntries(req.userId!);
 
+    // Store only a new verifier blob — never the Master Key itself
     const encrypted = encryptText(MASTER_KEY_VERIFY, String(newMasterKey));
     await MasterKeyEntry.findOneAndUpdate(
       { userId: req.userId },

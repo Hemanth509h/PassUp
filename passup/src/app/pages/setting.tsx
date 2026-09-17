@@ -31,6 +31,9 @@ import {
   Clock,
   Fingerprint,
   KeyRound,
+  Mail,
+  RefreshCw,
+  Activity,
 } from "lucide-react-native";
 
 import {
@@ -41,13 +44,12 @@ import {
   AuthUser,
 } from "../types";
 import {
-  API_BASE_URL,
   authApi,
   clearToken,
   clearUser,
-  getToken,
   getUser,
   recoveryApi,
+  serverApi,
   vaultApi,
 } from "../../apis/apis";
 import { useVault } from "../../context/VaultContext";
@@ -78,8 +80,6 @@ export interface SettingsViewProps {
 }
 
 const DEFAULT_SERVER_CONFIG: ServerSyncConfig = {
-  serverUrl: API_BASE_URL,
-  authToken: "",
   autoSync: false,
   lastSyncStatus: "idle",
 };
@@ -147,17 +147,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   // -----------------------------
-  // Server Config
+  // Server / Sync
   // -----------------------------
   const [serverConfig, setServerConfig] = useState<ServerSyncConfig>(
     propServerConfig ?? DEFAULT_SERVER_CONFIG
-  );
-
-  const [serverUrl, setServerUrl] = useState(
-    (propServerConfig ?? DEFAULT_SERVER_CONFIG).serverUrl
-  );
-  const [authToken, setAuthToken] = useState(
-    (propServerConfig ?? DEFAULT_SERVER_CONFIG).authToken
   );
   const [autoSync, setAutoSync] = useState(
     (propServerConfig ?? DEFAULT_SERVER_CONFIG).autoSync
@@ -166,8 +159,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   useEffect(() => {
     if (propServerConfig) {
       setServerConfig(propServerConfig);
-      setServerUrl(propServerConfig.serverUrl);
-      setAuthToken(propServerConfig.authToken);
       setAutoSync(propServerConfig.autoSync);
     } else {
       AsyncStorage.getItem(SERVER_STORAGE_KEY)
@@ -175,9 +166,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           if (stored) {
             try {
               const parsed = JSON.parse(stored);
-              setServerConfig(parsed);
-              if (parsed.serverUrl) setServerUrl(parsed.serverUrl);
-              if (parsed.authToken !== undefined) setAuthToken(parsed.authToken);
+              setServerConfig({
+                autoSync: Boolean(parsed.autoSync),
+                lastSyncTime: parsed.lastSyncTime,
+                lastSyncStatus: parsed.lastSyncStatus || "idle",
+                errorMessage: parsed.errorMessage,
+              });
               if (parsed.autoSync !== undefined) setAutoSync(parsed.autoSync);
             } catch {}
           }
@@ -186,30 +180,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     }
   }, [propServerConfig]);
 
-  const [showToken, setShowToken] = useState(false);
   const [isTestingServer, setIsTestingServer] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [serverStatusMessage, setServerStatusMessage] = useState<string | null>(null);
 
-  const handleSaveServerSettings = async () => {
-    const updated: ServerSyncConfig = {
-      ...serverConfig,
-      serverUrl: serverUrl.trim(),
-      authToken: authToken.trim(),
-      autoSync,
-    };
-
+  const persistServerConfig = async (updated: ServerSyncConfig) => {
     setServerConfig(updated);
     propOnUpdateServerConfig?.(updated);
-
     try {
       await AsyncStorage.setItem(SERVER_STORAGE_KEY, JSON.stringify(updated));
     } catch {}
+  };
 
-    setServerStatusMessage("Server settings saved");
-    setTimeout(() => {
-      setServerStatusMessage(null);
-    }, 2500);
+  const handleAutoSyncToggle = async (value: boolean) => {
+    setAutoSync(value);
+    await persistServerConfig({ ...serverConfig, autoSync: value });
   };
 
   const handleTestConnectionClick = async () => {
@@ -220,40 +205,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       if (propOnTestServerConnection) {
         await propOnTestServerConnection();
       } else {
-        const targetUrl = (serverUrl.trim() || API_BASE_URL).replace(/\/$/, "");
-        const token = authToken.trim() || (await getToken()) || "";
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-        const res = await fetch(`${targetUrl}/me`, {
-          method: "GET",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          throw new Error(`Server returned status ${res.status}`);
+        const data = await serverApi.testStatus();
+        if (!data?.status) {
+          throw new Error("Unexpected server response");
         }
       }
 
-      setServerStatusMessage("Server connection successful");
-      setServerConfig((prev) => ({
-        ...prev,
+      setServerStatusMessage("Server status: OK");
+      await persistServerConfig({
+        ...serverConfig,
         lastSyncStatus: "success",
         errorMessage: undefined,
-      }));
+      });
     } catch (error: any) {
-      const message =
-        error?.name === "AbortError"
-          ? "Connection timed out"
-          : error?.message || "Connection failed";
+      const message = error?.message || "Connection failed";
       setServerStatusMessage(message);
-      setServerConfig((prev) => ({
-        ...prev,
+      await persistServerConfig({
+        ...serverConfig,
         lastSyncStatus: "error",
         errorMessage: message,
-      }));
+      });
     } finally {
       setIsTestingServer(false);
     }
@@ -266,29 +237,77 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     try {
       if (propOnSyncServerNow) {
         await propOnSyncServerNow();
-      } else if (vault.isUnlocked) {
-        await vault.refreshEntries();
       } else {
-        await vaultApi.getMasterKeyStatus();
+        const result = await vaultApi.sync();
+        if (vault.isUnlocked) {
+          await vault.refreshEntries();
+        }
+        setServerStatusMessage(
+          `Synced — pushed ${result.pushed ?? 0}, pulled ${result.pulled ?? 0}`
+        );
       }
 
-      setServerStatusMessage("Vault synced successfully");
-      setServerConfig((prev) => ({
-        ...prev,
+      await persistServerConfig({
+        ...serverConfig,
         lastSyncStatus: "success",
         lastSyncTime: new Date().toISOString(),
         errorMessage: undefined,
-      }));
+      });
     } catch (error: any) {
       const message = error?.message || "Sync failed";
       setServerStatusMessage(message);
-      setServerConfig((prev) => ({
-        ...prev,
+      await persistServerConfig({
+        ...serverConfig,
         lastSyncStatus: "error",
         errorMessage: message,
-      }));
+      });
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  // -----------------------------
+  // Change Email
+  // -----------------------------
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [newEmailInput, setNewEmailInput] = useState("");
+  const [emailPasswordInput, setEmailPasswordInput] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+
+  const handleChangeEmail = async () => {
+    setEmailError(null);
+    const nextEmail = newEmailInput.trim().toLowerCase();
+    if (!nextEmail || !nextEmail.includes("@")) {
+      setEmailError("Enter a valid email address.");
+      return;
+    }
+    if (!emailPasswordInput) {
+      setEmailError("Enter your account password to confirm.");
+      return;
+    }
+
+    setIsChangingEmail(true);
+    try {
+      const updated = await authApi.changeEmail(nextEmail, emailPasswordInput);
+      setAuthUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              email: updated.email,
+              id: updated.id || updated._id || prev.id,
+              name: updated.name || prev.name,
+            }
+          : prev
+      );
+      setShowEmailModal(false);
+      setNewEmailInput("");
+      setEmailPasswordInput("");
+      Alert.alert("Email updated", `Signed-in email is now ${updated.email}`);
+    } catch (error: any) {
+      setEmailError(error?.message || "Failed to change email.");
+    } finally {
+      setIsChangingEmail(false);
     }
   };
 
@@ -567,7 +586,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <Text style={styles.title}>Vault Settings</Text>
           </View>
           <Text style={styles.subtitle}>
-            Security policies, 2FA recovery, and custom server backend.
+            Security, cloud sync, and account preferences.
           </Text>
         </View>
 
@@ -593,6 +612,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </Text>
                 </View>
               </View>
+
+              <Pressable
+                onPress={() => {
+                  setEmailError(null);
+                  setNewEmailInput(authUser.email || "");
+                  setEmailPasswordInput("");
+                  setShowEmailModal(true);
+                }}
+                style={styles.secondaryButton}
+              >
+                <Mail size={14} color={colors.accent} />
+                <Text style={styles.secondaryButtonText}>Change Email</Text>
+              </Pressable>
 
               <Pressable onPress={handleLogout} style={styles.logoutButton}>
                 <Text style={styles.logoutText}>Sign Out</Text>
@@ -755,13 +787,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </View>
 
         {/* -------------------------------- */}
-        {/* SERVER */}
+        {/* CLOUD SYNC */}
         {/* -------------------------------- */}
         <View style={styles.card}>
           <View style={styles.serverHeader}>
             <View style={styles.sectionTitle}>
               <Server size={16} color="#60a5fa" />
-              <Text style={styles.sectionTitleText}>CUSTOM BACKEND SERVER</Text>
+              <Text style={styles.sectionTitleText}>CLOUD SYNC</Text>
             </View>
 
             {serverConfig.lastSyncStatus && (
@@ -778,57 +810,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </View>
 
           <Text style={styles.description}>
-            Connect your remote server. The client transmits strictly AES-256
-            encrypted ciphertext, preserving zero-knowledge privacy.
+            SQLite speeds up vault loads on the server. Sync pushes local cache
+            to MongoDB and pulls the durable cloud copy back.
           </Text>
 
-          {/* Server URL */}
-          <Text style={styles.inputLabel}>Server API Base URL</Text>
-          <TextInput
-            value={serverUrl}
-            onChangeText={setServerUrl}
-            placeholder={API_BASE_URL || "API server URL"}
-            placeholderTextColor="#64748b"
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={styles.input}
-          />
+          {serverConfig.lastSyncTime ? (
+            <Text style={styles.inputLabel}>
+              Last sync: {new Date(serverConfig.lastSyncTime).toLocaleString()}
+            </Text>
+          ) : null}
 
-          {/* Token */}
-          <Text style={styles.inputLabel}>Authorization Token (Bearer)</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              value={authToken}
-              onChangeText={setAuthToken}
-              placeholder="your-jwt-or-api-key"
-              placeholderTextColor="#64748b"
-              secureTextEntry={!showToken}
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.passwordInput}
-            />
-
-            <Pressable
-              onPress={() => setShowToken(!showToken)}
-              style={styles.eyeButton}
-            >
-              {showToken ? (
-                <EyeOff size={17} color="#94a3b8" />
-              ) : (
-                <Eye size={17} color="#94a3b8" />
-              )}
-            </Pressable>
-          </View>
-
-          {/* Auto Sync */}
           <View style={styles.settingRow}>
             <Text style={styles.smallSettingText}>
-              Auto-sync changes to server
+              Remind me to sync regularly
             </Text>
 
             <Switch
               value={autoSync}
-              onValueChange={setAutoSync}
+              onValueChange={handleAutoSyncToggle}
               trackColor={{
                 false: "#17264a",
                 true: "#2563eb",
@@ -848,15 +847,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </View>
           )}
 
-          {/* Server Buttons */}
           <View style={styles.buttonRow}>
-            <Pressable
-              onPress={handleSaveServerSettings}
-              style={styles.serverButton}
-            >
-              <Text style={styles.serverButtonText}>Save URL</Text>
-            </Pressable>
-
             <Pressable
               onPress={handleTestConnectionClick}
               disabled={isTestingServer}
@@ -865,9 +856,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               {isTestingServer ? (
                 <ActivityIndicator size="small" color="#60a5fa" />
               ) : (
-                <Text style={[styles.serverButtonText, styles.blueText]}>
-                  Test Connection
-                </Text>
+                <>
+                  <Activity size={14} color="#60a5fa" />
+                  <Text style={[styles.serverButtonText, styles.blueText]}>
+                    Test Server Status
+                  </Text>
+                </>
               )}
             </Pressable>
 
@@ -879,9 +873,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               {isSyncing ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text style={[styles.serverButtonText, styles.whiteText]}>
-                  Sync Vault
-                </Text>
+                <>
+                  <RefreshCw size={14} color="#ffffff" />
+                  <Text style={[styles.serverButtonText, styles.whiteText]}>
+                    Sync
+                  </Text>
+                </>
               )}
             </Pressable>
           </View>
@@ -1150,6 +1147,70 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </View>
         </View>
       </Modal>
+
+      {/* CHANGE EMAIL MODAL */}
+      <Modal
+        visible={showEmailModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowEmailModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>Change Email</Text>
+            <Text style={styles.modalDescription}>
+              Enter a new email and confirm with your account password.
+            </Text>
+
+            {emailError ? (
+              <View style={styles.errorBox}>
+                <AlertTriangle size={14} color="#f87171" />
+                <Text style={styles.errorText}>{emailError}</Text>
+              </View>
+            ) : null}
+
+            <TextInput
+              value={newEmailInput}
+              onChangeText={setNewEmailInput}
+              placeholder="New email address"
+              placeholderTextColor="#64748b"
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              style={styles.input}
+            />
+
+            <TextInput
+              value={emailPasswordInput}
+              onChangeText={setEmailPasswordInput}
+              placeholder="Current account password"
+              placeholderTextColor="#64748b"
+              secureTextEntry
+              style={styles.input}
+            />
+
+            <View style={styles.modalButtons}>
+              <Pressable
+                onPress={() => setShowEmailModal(false)}
+                style={styles.cancelButton}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleChangeEmail}
+                disabled={isChangingEmail}
+                style={styles.updateButton}
+              >
+                {isChangingEmail ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={styles.updateText}>Update Email</Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -1235,6 +1296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: 10,
+    flexWrap: "wrap",
   },
 
   accountLeft: {
@@ -1497,8 +1559,10 @@ const styles = StyleSheet.create({
   serverButton: {
     flex: 1,
     minHeight: 42,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: 6,
     backgroundColor: colors.bgElevated,
     borderRadius: radii.md,
     paddingHorizontal: 7,

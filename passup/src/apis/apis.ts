@@ -8,24 +8,12 @@ import type {
 
 const TOKEN_KEY = 'passup_auth_token';
 const USER_KEY = 'passup_auth_user';
-const SERVER_STORAGE_KEY = 'passup_server_config';
 
 export const API_BASE_URL = (
   process.env.EXPO_PUBLIC_API_URL || ''
 ).replace(/\/$/, '');
 
 export async function getBaseUrl(): Promise<string> {
-  try {
-    const stored = await AsyncStorage.getItem(SERVER_STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed?.serverUrl) {
-        return String(parsed.serverUrl).replace(/\/$/, '');
-      }
-    }
-  } catch {
-    // ignore
-  }
   return API_BASE_URL;
 }
 
@@ -70,6 +58,9 @@ async function apiFetch(
   options: RequestInit & { masterKey?: string } = {},
 ) {
   const baseUrl = await getBaseUrl();
+  if (!baseUrl) {
+    throw new Error('API URL is not configured (EXPO_PUBLIC_API_URL).');
+  }
   const authHeader = await getAuthHeader();
   const headers: Record<string, string> = {
     Accept: 'application/json',
@@ -153,6 +144,24 @@ export const authApi = {
     return apiFetch('/me');
   },
 
+  async updateProfile(payload: {
+    name?: string;
+    email?: string;
+    password?: string;
+    currentPassword?: string;
+  }) {
+    const data = await apiFetch('/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (data) await saveUser(data);
+    return data;
+  },
+
+  async changeEmail(email: string, currentPassword: string) {
+    return this.updateProfile({ email, currentPassword });
+  },
+
   async logout(): Promise<void> {
     try {
       await apiFetch('/logout', { method: 'POST' });
@@ -161,6 +170,16 @@ export const authApi = {
     }
     await clearToken();
     await clearUser();
+  },
+};
+
+export const serverApi = {
+  async testStatus(): Promise<{ status: string }> {
+    return apiFetch('/api-status');
+  },
+
+  async syncVault() {
+    return apiFetch('/sync', { method: 'POST' });
   },
 };
 
@@ -223,6 +242,10 @@ export const vaultApi = {
   async getPassword(id: string, masterKey: string): Promise<string> {
     const data = await apiFetch(`/password/${id}`, { masterKey });
     return data.data;
+  },
+
+  async sync() {
+    return serverApi.syncVault();
   },
 };
 

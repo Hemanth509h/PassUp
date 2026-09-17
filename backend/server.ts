@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 
 import connectDB from "./config/db.js";
+import { getVaultDb } from "./config/sqlite.js";
 import { assertJwtSecretConfigured } from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import entriesRoutes from "./routes/entries.js";
@@ -22,6 +23,7 @@ try {
 
 try {
   await connectDB();
+  getVaultDb();
 } catch {
   console.error(
     "Fatal: Database connection failed during server startup. Exiting...",

@@ -1,14 +1,22 @@
-import crypto from "crypto";
 import express from "express";
 
 import { protect } from "../middleware/auth.js";
-import { MasterKeyEntry, VaultEntry } from "../models/index.js";
+import {
+  MasterKeyEntry,
+  VaultStore,
+  upsertMongoEntry,
+  deleteMongoEntry,
+  deleteAllMongoEntries,
+  listMongoEntries,
+} from "../models/index.js";
+import type { VaultCategory, VaultEntryRecord } from "../models/index.js";
 import { decryptText, encryptText } from "../utils/crypto.js";
 import { errorMessage } from "../utils/errors.js";
 
 const router = express.Router();
 const MASTER_KEY_VERIFY = "Pass-up@2026";
 
+/** Master Key arrives only via request header — never read from or written to DB. */
 const getMasterKey = (req: express.Request) => {
   const value = req.headers["x-master-key"];
   return typeof value === "string" ? value : undefined;
@@ -27,7 +35,11 @@ const estimateStrength = (password: string): string => {
   return "Strong";
 };
 
-const decryptEntry = (entryObj: Record<string, unknown>, masterKey: string) => {
+const decryptEntry = (
+  entry: VaultEntryRecord,
+  masterKey: string,
+): Record<string, unknown> => {
+  const entryObj: Record<string, unknown> = { ...entry };
   try {
     if (typeof entryObj.password === "string" && entryObj.password) {
       entryObj.password = decryptText(entryObj.password, masterKey);
@@ -47,38 +59,42 @@ const decryptEntry = (entryObj: Record<string, unknown>, masterKey: string) => {
   return entryObj;
 };
 
+/** Prefer SQLite for speed; hydrate from MongoDB when the cache is empty. */
+async function listCachedEntries(userId: string): Promise<VaultEntryRecord[]> {
+  let entries = VaultStore.listByUser(userId);
+  if (entries.length === 0) {
+    const mongoEntries = await listMongoEntries(userId);
+    if (mongoEntries.length > 0) {
+      VaultStore.replaceAllForUser(userId, mongoEntries);
+      entries = VaultStore.listByUser(userId);
+    }
+  }
+  return entries;
+}
+
 router.get("/entries", protect, async (req, res) => {
   try {
-    const entries = await VaultEntry.find({ userId: req.userId }).sort({
-      createdAt: -1,
-    });
+    const entries = await listCachedEntries(req.userId!);
     const masterKey = getMasterKey(req);
 
     if (masterKey) {
       const decryptedEntries = entries.map((entry) =>
-        decryptEntry(
-          entry.toObject() as unknown as Record<string, unknown>,
-          masterKey,
-        ),
+        decryptEntry(entry, masterKey),
       );
       return res.json({ status: "success", entries: decryptedEntries });
     }
 
-    // Locked preview: metadata only (no secrets / plaintext credentials)
-    const lockedEntries = entries.map((entry) => {
-      const obj = entry.toObject() as unknown as Record<string, unknown>;
-      return {
-        _id: obj._id,
-        entryID: obj.entryID,
-        title: obj.title,
-        category: obj.category || "login",
-        favorite: Boolean(obj.favorite),
-        tags: obj.tags || [],
-        createdAt: obj.createdAt,
-        updatedAt: obj.updatedAt,
-        locked: true,
-      };
-    });
+    const lockedEntries = entries.map((entry) => ({
+      _id: entry._id,
+      entryID: entry.entryID,
+      title: entry.title,
+      category: entry.category || "login",
+      favorite: Boolean(entry.favorite),
+      tags: entry.tags || [],
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+      locked: true,
+    }));
 
     res.json({ status: "success", entries: lockedEntries, locked: true });
   } catch (error) {
@@ -146,16 +162,15 @@ router.post("/entries", protect, async (req, res) => {
       (category === "card" ? cardDetails.cardNumber : notes) ||
       "secure-note";
 
-    const resolvedEntryId =
-      typeof entryID === "string" && entryID.trim()
-        ? entryID.trim()
-        : crypto.randomUUID();
-
-    const entry = await VaultEntry.create({
-      userId: req.userId,
-      entryID: resolvedEntryId,
+    // Fast path: SQLite cache
+    const entry = VaultStore.create({
+      userId: req.userId!,
+      entryID:
+        typeof entryID === "string" && entryID.trim()
+          ? entryID.trim()
+          : undefined,
       title,
-      category,
+      category: category as VaultCategory,
       url,
       username,
       email,
@@ -169,11 +184,10 @@ router.post("/entries", protect, async (req, res) => {
         : undefined,
     });
 
-    const responseEntry = decryptEntry(
-      entry.toObject() as unknown as Record<string, unknown>,
-      masterKey,
-    );
-    res.json({ status: "success", entry: responseEntry });
+    // Durable copy in MongoDB (same ciphertext, never master key)
+    await upsertMongoEntry(entry);
+
+    res.json({ status: "success", entry: decryptEntry(entry, masterKey) });
   } catch (error) {
     console.error("Create entry error:", error);
     res.status(500).json({ status: "error", message: errorMessage(error) });
@@ -195,27 +209,27 @@ router.put("/entries/:id", protect, async (req, res) => {
     cardDetails,
   } = req.body || {};
 
+  const entryId = String(req.params.id);
+
   try {
-    const entry = await VaultEntry.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
-    if (!entry) {
+    const existing = VaultStore.findByIdForUser(entryId, req.userId!);
+    if (!existing) {
       return res
         .status(404)
         .json({ status: "error", message: "Entry not found" });
     }
 
-    if (title !== undefined) entry.title = title;
-    if (category !== undefined) entry.category = category;
-    if (url !== undefined) entry.url = url;
-    if (username !== undefined) entry.username = username;
-    if (email !== undefined) entry.email = email;
-    if (notes !== undefined) entry.notes = notes;
-    if (tags !== undefined) entry.tags = tags;
-    if (favorite !== undefined) entry.favorite = Boolean(favorite);
-
     const masterKey = getMasterKey(req);
+    const patch: Parameters<typeof VaultStore.update>[2] = {};
+
+    if (title !== undefined) patch.title = title;
+    if (category !== undefined) patch.category = category as VaultCategory;
+    if (url !== undefined) patch.url = url;
+    if (username !== undefined) patch.username = username;
+    if (email !== undefined) patch.email = email;
+    if (notes !== undefined) patch.notes = notes;
+    if (tags !== undefined) patch.tags = tags;
+    if (favorite !== undefined) patch.favorite = Boolean(favorite);
 
     if (password !== undefined) {
       if (!masterKey) {
@@ -224,8 +238,8 @@ router.put("/entries/:id", protect, async (req, res) => {
           message: "Master Key header is required to update password",
         });
       }
-      entry.password = encryptText(password, masterKey);
-      entry.strength = strength || estimateStrength(password);
+      patch.password = encryptText(password, masterKey);
+      patch.strength = strength || estimateStrength(password);
     }
 
     if (cardDetails !== undefined) {
@@ -235,18 +249,22 @@ router.put("/entries/:id", protect, async (req, res) => {
           message: "Master Key header is required to update card details",
         });
       }
-      entry.cardDetails = encryptText(JSON.stringify(cardDetails), masterKey);
+      patch.cardDetails = encryptText(JSON.stringify(cardDetails), masterKey);
       if (!password && cardDetails.cardNumber) {
-        entry.password = encryptText(cardDetails.cardNumber, masterKey);
+        patch.password = encryptText(cardDetails.cardNumber, masterKey);
       }
     }
 
-    await entry.save();
-
-    const payload = entry.toObject() as unknown as Record<string, unknown>;
-    if (masterKey) {
-      decryptEntry(payload, masterKey);
+    const entry = VaultStore.update(entryId, req.userId!, patch);
+    if (!entry) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Entry not found" });
     }
+
+    await upsertMongoEntry(entry);
+
+    const payload = masterKey ? decryptEntry(entry, masterKey) : { ...entry };
     res.json({ status: "success", entry: payload });
   } catch (error) {
     console.error("Update entry error:", error);
@@ -256,11 +274,10 @@ router.put("/entries/:id", protect, async (req, res) => {
 
 router.delete("/entries/:id", protect, async (req, res) => {
   try {
-    const result = await VaultEntry.deleteOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
-    if (result.deletedCount === 0) {
+    const id = String(req.params.id);
+    const deleted = VaultStore.deleteByIdForUser(id, req.userId!);
+    await deleteMongoEntry(id, req.userId!);
+    if (!deleted) {
       return res
         .status(404)
         .json({ status: "error", message: "Entry not found" });
@@ -280,10 +297,10 @@ router.get("/password/:id", protect, async (req, res) => {
         .status(400)
         .json({ status: "error", message: "Master Key header is required" });
     }
-    const entry = await VaultEntry.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
+    const entry = VaultStore.findByIdForUser(
+      String(req.params.id),
+      req.userId!,
+    );
     if (!entry) {
       return res
         .status(404)
@@ -293,6 +310,37 @@ router.get("/password/:id", protect, async (req, res) => {
     res.json({ status: "success", data: decrypted });
   } catch (error) {
     console.error("Get password error:", error);
+    res.status(500).json({ status: "error", message: errorMessage(error) });
+  }
+});
+
+/**
+ * Push SQLite → MongoDB, then pull MongoDB → SQLite.
+ * Keeps durable cloud copy in sync while refreshing the fast local cache.
+ */
+router.post("/sync", protect, async (req, res) => {
+  try {
+    const userId = req.userId!;
+    const localEntries = VaultStore.listByUser(userId);
+
+    let pushed = 0;
+    for (const entry of localEntries) {
+      await upsertMongoEntry(entry);
+      pushed += 1;
+    }
+
+    const cloudEntries = await listMongoEntries(userId);
+    VaultStore.replaceAllForUser(userId, cloudEntries);
+
+    res.json({
+      status: "success",
+      message: "Sync complete",
+      pushed,
+      pulled: cloudEntries.length,
+      lastSyncTime: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Sync error:", error);
     res.status(500).json({ status: "error", message: errorMessage(error) });
   }
 });
@@ -402,16 +450,22 @@ router.post("/update-master-key", protect, async (req, res) => {
       });
     }
 
-    const entries = await VaultEntry.find({ userId: req.userId });
+    const entries = VaultStore.listByUser(req.userId!);
     for (const vaultEntry of entries) {
       try {
-        const decryptedPassword = decryptText(vaultEntry.password, oldMasterKey);
-        vaultEntry.password = encryptText(decryptedPassword, newMasterKey);
+        const decryptedPassword = decryptText(
+          vaultEntry.password,
+          oldMasterKey,
+        );
+        const patch: Parameters<typeof VaultStore.update>[2] = {
+          password: encryptText(decryptedPassword, newMasterKey),
+        };
         if (vaultEntry.cardDetails) {
           const cardPlain = decryptText(vaultEntry.cardDetails, oldMasterKey);
-          vaultEntry.cardDetails = encryptText(cardPlain, newMasterKey);
+          patch.cardDetails = encryptText(cardPlain, newMasterKey);
         }
-        await vaultEntry.save();
+        const updated = VaultStore.update(vaultEntry._id, req.userId!, patch);
+        if (updated) await upsertMongoEntry(updated);
       } catch (err) {
         console.error(`Error re-encrypting entry ${vaultEntry._id}:`, err);
       }

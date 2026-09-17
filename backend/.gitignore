@@ -5,6 +5,8 @@ node_modules/
 .env
 .env.*
 !.env.example
+.env
+.env.*
 
 # build / compile
 dist/
@@ -28,3 +30,9 @@ pnpm-debug.*
 # coverage / test
 coverage/
 .nyc_output/
+
+# local SQLite vault (encrypted secrets)
+data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

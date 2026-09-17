@@ -1,29 +1,23 @@
-import crypto from "crypto";
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 
 export { default as User } from "./User.js";
 export type { IUser } from "./User.js";
+export { VaultStore } from "./VaultStore.js";
+export type { VaultCategory, VaultEntryRecord } from "./VaultStore.js";
+export {
+  VaultEntry,
+  upsertMongoEntry,
+  deleteMongoEntry,
+  deleteAllMongoEntries,
+  listMongoEntries,
+  mongoDocToRecord,
+} from "./MongoVault.js";
+export type { IVaultEntry } from "./MongoVault.js";
 
-export type VaultCategory = "login" | "card" | "api_key" | "note";
-
-export interface IVaultEntry extends Document {
-  userId: Types.ObjectId;
-  entryID: string;
-  title: string;
-  category: VaultCategory;
-  url?: string;
-  username?: string;
-  email?: string;
-  password: string;
-  notes?: string;
-  tags: string[];
-  strength?: string;
-  favorite: boolean;
-  cardDetails?: string;
-  createdAt: Date;
-  updatedAt?: Date;
-}
-
+/**
+ * Master Key verifier only — stores ciphertext of a known challenge string.
+ * The Master Key itself is NEVER persisted in MongoDB or SQLite.
+ */
 export interface IMasterKeyEntry extends Document {
   userId: Types.ObjectId;
   masterkeyencrypt?: string;
@@ -40,35 +34,6 @@ export interface IRecoveryKit extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-const vaultEntrySchema = new Schema<IVaultEntry>(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    entryID: {
-      type: String,
-      required: true,
-      unique: true,
-      default: () => crypto.randomUUID(),
-    },
-    title: { type: String, required: true },
-    category: {
-      type: String,
-      enum: ["login", "card", "api_key", "note"],
-      default: "login",
-    },
-    url: { type: String },
-    username: { type: String },
-    email: { type: String },
-    password: { type: String, required: true },
-    notes: { type: String },
-    tags: [{ type: String }],
-    strength: { type: String },
-    favorite: { type: Boolean, default: false },
-    cardDetails: { type: String },
-    createdAt: { type: Date, default: Date.now },
-  },
-  { timestamps: true },
-);
 
 const masterKeySchema = new Schema<IMasterKeyEntry>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -92,10 +57,6 @@ const recoveryKitSchema = new Schema<IRecoveryKit>(
   },
   { timestamps: true },
 );
-
-export const VaultEntry: Model<IVaultEntry> =
-  mongoose.models.VaultEntry ||
-  mongoose.model<IVaultEntry>("VaultEntry", vaultEntrySchema);
 
 export const MasterKeyEntry: Model<IMasterKeyEntry> =
   mongoose.models.MasterKeyEntry ||

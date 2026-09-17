@@ -88,11 +88,39 @@ router.post("/forgot-password", async (req, res) => {
 router.get("/me", protect, (req, res) => res.json(userPayload(req.user!)));
 
 router.patch("/profile", protect, async (req, res) => {
-  const { name, password, currentPassword } = req.body;
+  const { name, password, currentPassword, email } = req.body;
   try {
     const user = await User.findById(req.user!._id);
     if (!user) return res.status(404).json({ message: "User not found." });
     if (name !== undefined) user.name = name;
+
+    if (email !== undefined) {
+      const normalizedEmail = String(email).toLowerCase().trim();
+      if (!normalizedEmail || !normalizedEmail.includes("@")) {
+        return res.status(400).json({ message: "A valid email is required." });
+      }
+      if (!currentPassword) {
+        return res
+          .status(400)
+          .json({ message: "Current password required to change email." });
+      }
+      if (!(await user.comparePassword(currentPassword))) {
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect." });
+      }
+      const taken = await User.findOne({
+        email: normalizedEmail,
+        _id: { $ne: user._id },
+      });
+      if (taken) {
+        return res
+          .status(409)
+          .json({ message: "An account with this email already exists." });
+      }
+      user.email = normalizedEmail;
+    }
+
     if (password) {
       if (!currentPassword)
         return res.status(400).json({ message: "Current password required." });

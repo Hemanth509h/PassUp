@@ -44,8 +44,6 @@ export interface TwoFactorConfig {
 }
 
 export interface ServerSyncConfig {
-  serverUrl: string;
-  authToken: string;
   autoSync: boolean;
   lastSyncTime?: string;
   lastSyncStatus?: 'idle' | 'success' | 'error' | 'syncing';
